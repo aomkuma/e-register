@@ -1,0 +1,53 @@
+<div ng-include src="'html/top_menu_admin.html'"></div>
+<div class="page-header text-center"><h3>ลงทะเบียนลงทะเบียนหน้างาน</h3></div>
+<form name="form" novalidate>
+	<div class="row">
+		<div class="col-lg-3 col-lg-offset-3">
+			<div class="form-group has-feedback" ng-class="{ 'has-success' : form.Firstname.$valid,'has-error' : form.Firstname.$invalid}">
+				<label>ชื่อ :</label> <input type="text"
+					name="Firstname" id="Firstname" class="form-control"
+					placeholder="ชื่อ"
+					ng-model="regisform.Firstname" required />
+			</div>
+		</div>
+		<div class="col-lg-3">
+			<div class="form-group has-feedback" ng-class="{ 'has-success' : form.Lastname.$valid,'has-error' : form.Lastname.$invalid}">
+				<label>นามสกุล :</label> <input type="text"
+					name="Lastname" id="Lastname" class="form-control"
+					placeholder="นามสกุล"
+					ng-model="regisform.Lastname" required />
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-lg-3 col-lg-offset-3">
+			<div class="form-group has-feedback">
+				<label>อีเมล์ :</label> <input type="email"
+					name="Email" id="Email" class="form-control"
+					placeholder="อีเมล์"
+					ng-model="regisform.Email" />
+			</div>
+		</div>
+		<div class="col-lg-3">
+			<div class="form-group has-feedback">
+				<label>เบอร์โทรศัพท์ :</label> <input type="text"
+					name="Mobile" id="Mobile" class="form-control"
+					placeholder="เบอร์โทรศัพท์"
+					ng-model="regisform.Mobile" pattern=.*\S.* ui-mask="999-999-9999" model-view-value="false"  ui-mask-placeholder=""  ui-mask-placeholder-char="space" /> 
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-lg-12 text-center">
+			<br>&nbsp;<br>
+			<button class="btn btn-primary"  ng-click="saveFrontRegister(regisform, 'DRAFT')" ng-disabled="form.$invalid">
+			บันทึก</button>
+			<button class="btn btn-info"  ng-click="saveFrontRegister(regisform, 'GOYOUNGER')" ng-disabled="form.$invalid">บันทึกและทำแบบสอบถาม <= 15</button>
+			<button class="btn btn-warning"  ng-click="saveFrontRegister(regisform, 'GOOLDER')" ng-disabled="form.$invalid">บันทึกและทำแบบสอบถาม > 15</button>
+		</div>
+	</div>
+</form>
+
+<style type="text/css" media="screen">
+	
+</style>

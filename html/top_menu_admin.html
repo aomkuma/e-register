@@ -1,0 +1,90 @@
+<div class="row" style="background-color: #ABE1F5; padding: 10PX;">
+    <!--<div class="col-lg-2 col-md-2 col-sm-4  col-xs-4">
+         <a href="#/"><img src="img/dpo_logo_only.png" style="max-width: 70%; padding-top: 0px;" /></a>
+    </div>-->
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center" style="color:#606060;">
+        <div style="padding-top: 0px;">
+            <label style="font-weight: bolder; font-size: 2.3em;">ระบบประเมินเทศกาล<span class="red_font_head">โค</span>นมแห่งชาติ</label>
+            <br>
+            
+        </div>
+    </div>
+</div>
+
+<div class="row form-group">
+    <div class="col-lg-12" style="padding-left: 0px; padding-right: 0px;">
+        <nav class="navbar navbar-inverse" style="border-bottom-color: #ABE1F5;">
+          <div class="container-fluid">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="true">
+                <span class="sr-only" style="background-color: #ABE1F5;">Toggle navigation</span>
+                <span class="icon-bar" style="background-color: #ABE1F5;"></span>
+                <span class="icon-bar" style="background-color: #ABE1F5;"></span>
+                <span class="icon-bar" style="background-color: #ABE1F5;"></span>
+              </button>
+            </div>
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <div class="col-lg-9  col-md-9 col-sm-12 col-xs-12">
+                    <ul class="nav navbar-nav"  style="text-align: center;">
+                        <li ng-class="{'menu_selected':menu_selected == 'attendee-list'}"><a href="#/attendee-list"><b ng-class="{'font_menu_selected':menu_selected == 'attendee-list'}">รายชื่อผู้ลงทะเบียน</b></a></li>
+                        <li ng-class="{'menu_selected':menu_selected == 'register-for-admin'}"><a href="#/register-for-admin"><b ng-class="{'font_menu_selected':menu_selected == 'register-for-admin'}">ลงทะเบียนหน้างาน</b></a></li>
+                        <li ng-class="{'menu_selected':menu_selected == 'manage-admin'}"><a href="#/manage-admin"><b ng-class="{'font_menu_selected':menu_selected == 'manage-admin'}">เพิ่มผู้ดูแลระบบ</b></a></li>
+                        <li ng-class="{'menu_selected':menu_selected == 'report'}"><a href="#/report"><b ng-class="{'font_menu_selected':menu_selected == 'report'}">ออกรายงาน</b></a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                    <div class="input-group" style="padding-top: 15px; color: #000000;">
+                        <label>สวัสดีคุณ &nbsp;{{currentUser.Firstname + ' ' + currentUser.Lastname}}&nbsp;&nbsp;&nbsp;<a ng-click="logoutAdmin()">ออกจากระบบ</a></label>
+                        
+                    </div>
+                </div>
+            </div><!--/.nav-collapse -->
+          </div>
+        </nav>
+    </div>
+</div>
+
+<style>
+    .menu_selected{
+        background-color: #ABE1F5;
+        color:#000;
+        border-radius: 20px 20px 20px 20px;
+    }
+    .menu_selected a { color: #000; }
+    .menu_selected a:visited { color: #000; }
+    .menu_selected a:hover { color: #7DDBFD; }
+    .menu_selected a:active { color: #7DDBFD; }
+    .menu_selected a:focus { color: #FFF; }
+     .font_menu_selected {
+        color:#FFF;
+     }
+     
+     .dropdown_open{
+        background-color: #ABE1F5;
+        color:#FFF;
+        border-radius: 20px 20px 0px 0px;
+     }
+
+     .img-alert-unseen {
+        border:2px solid red;
+     }
+     .img-alert-unseen:hover {
+        border:1px solid #ccc;
+     }
+     .popover-notification {
+        min-width: 380px;
+     }
+     .div-notification-unseen{
+        background-color: #E2F7FF;
+        padding-top:10px ;
+     }
+     .menu_selected a:visited {
+     color: #000; 
+    }
+    .red_font_head{
+        color: #CC0000;
+    }
+    .blue_font_head{
+        color: #0066CC;
+    }
+</style>

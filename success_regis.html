@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Elastic Login Form</title>
+  <style>
+    /* Base styles */
+*, *:after, *:before {
+  box-sizing: border-box;
+}
+html {
+  line-height: 1.5;
+  height: 100%;
+  font-weight: lighter;
+  
+}
+
+body {
+  position: relative;
+  margin: 0;
+  font-family: 'Work Sans', Arial, Helvetica, sans-serif;
+  min-height: 100%;
+  background: linear-gradient(to bottom, #FFFFFF 0%, #7DDBFD 100%) no-repeat;
+  color: #777;
+}
+img {
+  vertical-align: middle;
+  max-width: 100%;
+}
+button {
+  cursor: pointer;
+  border: 0;
+  padding: 0;
+  background-color: transparent;
+}
+
+/* Container */
+.container-eg {
+  margin-top:4em;
+  position: absolute;
+  width: 90%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+  animation: intro .7s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+/* Profile Card */
+.profile {
+  position: relative;
+  padding-top: 5em;
+}
+.profile--open {
+
+}
+.profile--open .profile__form {
+  visibility: visible;
+  height: auto;
+  opacity: 1;
+  transform: translateY(-6em);
+  padding-top: 2em;
+  padding-bottom: 1em;
+}
+.profile--open .profile__fields {
+  opacity: 1;
+  visibility: visible;
+}
+.profile--open .profile__avatar {
+  transform: translate(-50%, -1.5em);
+  border-radius: 50%;
+}
+.profile__form {
+  position: relative;
+  background: white;
+  
+  opacity: 0;
+  height: 0;
+  padding: 2em;
+  border-radius: .25em;
+  -webkit-filter: drop-shadow(0 0 2em rgba(0,0,0,0.2));
+  transition: 
+    opacity .4s ease-in-out,
+    height .4s ease-in-out,
+    transform .4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+    padding .4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.profile__fields {
+  opacity: 0;
+  
+  transition: opacity .2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.profile__avatar {
+  position: absolute;
+  z-index: 1;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 1.25em;
+  overflow: hidden;
+  width: 7em;
+  height: 7em;
+  display: block;
+  transition: transform .3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  will-change: transform;
+}
+.profile__avatar:focus {
+  outline: 0;
+}
+.profile__footer {
+  padding-top: 0.5em;
+}
+
+
+/* Form */
+.field {
+  position: relative;
+  margin-bottom: 0.5em;
+}
+.label {
+  position: absolute;
+  left:0px;
+  height: 2rem;
+  line-height: 2rem;
+  bottom: 0;
+  color: #999;
+  transition: all .3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  font-weight: 400;
+}
+
+.label-static{
+  color: #999;
+  font-size: 0.8em;
+  font-weight: 400;
+}
+
+.gender-label{
+  color: #999;
+  font-size: 0.8em;
+  font-weight: 400;
+}
+.input {
+  width: 100%;
+  font-size: 100%;
+  border: 0;
+  padding: 0;
+  background-color: transparent;
+  height: 2rem;
+  line-height: 2rem;
+  border-bottom: 1px solid #eee;
+  color: #777;
+  transition: all .2s ease-in;
+}
+.input:focus {
+  outline: 0;
+  border-color: #ccc;
+}
+.alert{
+  padding: 7px;
+}
+
+.input-require{
+  border-bottom: 1px solid #D84040;
+}
+
+.select-require{
+  border: 1px solid #D84040;
+}
+
+.form-control{
+  font-size: 0.8em;
+}
+
+/* Using required and a faux pattern to see if input has text from http://stackoverflow.com/questions/16952526/detect-if-an-input-has-text-in-it-using-css */
+.input:focus + .label,
+input:valid + .label {
+  transform: translateY(-100%);
+  font-size: 0.85rem;
+  color: #ccc;
+}
+
+/* Button */
+
+
+/* Intro animation */
+@keyframes intro {
+  from {
+    opacity: 0;
+    top: 0;
+  }
+  to {
+    opacity: 1;
+    top: 50%;
+  }
+}
+    </style>
+</head>
+
+<body>
+  <!--Google Font - Work Sans-->
+<link href='https://fonts.googleapis.com/css?family=Work+Sans:400,300,700' rel='stylesheet' type='text/css'>
+
+<div class="container-eg">
+  
+      <div class="profile profile--open">
+          <div class="profile__form" ng-form="successForm" style="margin-top: -5em; font-size: 0.8em;"><!---->
+            <div class="row profile__fields">
+              <div class="col-md-8 col-xs-12 col-md-offset-2 text-center">
+                <span class="glyphicon glyphicon-ok" style="font-size: 3em; font-weight: bolder; color: green;"></span>
+                <br> ขอบคุณที่ลงทะเบียนเข้าร่วมงานเทศกาลโคนมแห่งชาติ ประจำปี 2561 
+                <br>ระบบได้ยืนยันการลงทะเบียนผ่านทาง SMS ไปยังหมายเลขโทรศัพท์มือถือที่ท่านได้ระบุไว้ 
+                <br><a ng-click="gotoRegister()">กลับไปหน้าลงทะเบียน</a>
+                <br>
+                <br>
+              </div>
+            </div>
+          </div>
+    </div>
+  </div>
+      
+    
+</body>
+</html>

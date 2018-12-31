@@ -1,0 +1,73 @@
+<div ng-include src="'html/top_menu_admin.html'"></div>
+<form name="evaluate_frm" novalidate>
+	<div class="page-header text-center"><h1><b>แบบสอบถามการจัดงานเทศกาลโคนมแห่งชาติ ประจำปี 2561</b>
+	</h1></div>
+	<div class="row">
+		<div class="col-lg-6">
+			<h2><u>{{QuestionTypeList[ShowSection-1].section}}</u></h2>
+			<h2>{{QuestionTypeList[ShowSection-1].sub_section}}</h2>
+
+		</div>
+	</div>
+	<div class="row form-group" ng-repeat="question in QuestionList | filter:filterEvaluate" style="font-size: 1.5em;" >
+		<div class="col-lg-12">
+			<div class="row">
+				<div class="col-lg-12">
+					<label>{{($index + 1)}} ) {{question.Questions}}</label>
+				</div>
+			</div>
+			<div class="row" ng-show="question.QuestionType == 'ONCE'">
+				<div ng-class="{'col-lg-3':question.QuestionsSection == '1', 'col-lg-2':question.QuestionsSection >= '2'}" ng-repeat="choice in question.choice_list">
+					<label for="answer{{choice.ChoiceID}}" class=" label_input_img">
+						<input type="radio" id="answer{{choice.ChoiceID}}" name="answer{{question.QuestionID}}" ng-model="choice.answer" required value="{{choice.ChoiceDesc}}" ng-click="checkValue(choice.answer,choice)" ng-show="question.QuestionsSection == '1'">  &nbsp;
+						<!--<img src="img/excellent.png" ng-show="choice.ChoiceOrder == '1'">
+						<img src="img/good.png" ng-show="choice.ChoiceOrder == '2'">
+						<img src="img/little.png" ng-show="choice.ChoiceOrder == '3'">
+						<img src="img/bad.png" ng-show="choice.ChoiceOrder == '4'">
+						<img src="img/nocomment.png" ng-show="choice.ChoiceOrder == '5'">-->
+						<img src="img/{{choice.ChoiceOrder}}.png" style="height: 5em; width: auto;" ng-show="question.QuestionsSection >= '2'">
+						<span ng-bind-html="choice.ChoiceDesc" ng-show="question.QuestionsSection == '1'"></span>
+					</label>
+				</div>
+			</div>
+			<div class="row" ng-show="question.QuestionType == 'MANY'">
+				<div class="col-lg-3" ng-repeat="choice in question.choice_list">
+					<label><input type="checkbox" ng-model="choice.answer" ng-true-value="'{{choice.ChoiceDesc}}'" ng-false-value="''" ng-click="checkManyValue(choice.answer,choice)"> &nbsp;{{choice.ChoiceDesc}}</label>
+				</div>
+			</div>
+			<hr style="width: 70%;">
+		</div>
+	</div>
+	
+	<div class="row">
+		<div class="col-lg-4 col-lg-offset-4 col-xs-4 col-xs-offset-4 text-center" ng-show="DisplayType == ''">
+			<div class="page-header">
+				<button class="btn btn-default" style="font-size: 1em;" ng-click="backStep()" ng-show="ShowSection > 1"><span class="glyphicon glyphicon-arrow-left"></span> ย้อนกลับ </button>
+				<button class="btn btn-primary" style="font-size: 1em;" ng-click="nextStep()" ng-disabled="!AllowNextButton" ng-show="ShowSection <  QuestionTypeList.length" > ถัดไป <span class="glyphicon glyphicon-arrow-right"></span></button>
+				<button class="btn btn-success" style="font-size: 1em;" ng-click="finish()" ng-disabled="!AllowNextButton" ng-show="ShowSection ==  QuestionTypeList.length"> ส่งแบบสอบถาม <span class="glyphicon glyphicon-ok"></span></button>
+			</div>
+		</div>
+		<div class="col-lg-4 col-lg-offset-4 col-xs-4 col-xs-offset-4 text-center" ng-show="DisplayType == 'ALL'">
+			<div class="page-header">
+				<button class="btn btn-success" style="font-size: 1em;" ng-click="finish()"> ส่งแบบสอบถาม <span class="glyphicon glyphicon-ok"></span></button>
+			</div>
+		</div>
+	</div>
+</form>
+<style type="text/css" media="screen">
+
+/*label > input{  HIDE RADIO */
+.label_input{	
+  visibility: hidden; /* Makes input not-clickable */
+  position: absolute; /* Remove input from document flow */
+}
+	/*label > input + img{  IMAGE STYLES */
+.label_input_img{
+  cursor:pointer;
+  border:2px solid transparent;
+}
+label > input:checked + img{ /* (RADIO CHECKED) IMAGE STYLES */
+  border:2px solid #f00;
+  border-radius:100%;
+}	
+</style>

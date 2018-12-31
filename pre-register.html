@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Elastic Login Form</title>
+  <style>
+    /* Base styles */
+*, *:after, *:before {
+  box-sizing: border-box;
+}
+html {
+  line-height: 1.5;
+  height: 100%;
+  font-weight: lighter;
+  
+}
+
+body {
+  position: relative;
+  margin: 0;
+  font-family: 'Work Sans', Arial, Helvetica, sans-serif;
+  min-height: 100%;
+  background: linear-gradient(to bottom, #FFFFFF 0%, #7DDBFD 100%) no-repeat;
+  color: #777;
+  height: 2000px;
+}
+img {
+  vertical-align: middle;
+  max-width: 100%;
+}
+button {
+  cursor: pointer;
+  border: 0;
+  padding: 0;
+  background-color: transparent;
+}
+
+/* Container */
+.container-eg {
+  margin-top:4em;
+  position: absolute;
+  width: 90%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+  animation: intro .7s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+/* Profile Card */
+.profile {
+  position: relative;
+  padding-top: 5em;
+}
+.profile--open {
+
+}
+.profile--open .profile__form {
+  visibility: visible;
+  height: auto;
+  opacity: 1;
+  transform: translateY(-33em);
+  padding-top: 2em;
+  padding-bottom: 1em;
+}
+.profile--open .profile__fields {
+  opacity: 1;
+  visibility: visible;
+}
+.profile--open .profile__avatar {
+  transform: translate(-50%, -1.5em);
+  border-radius: 50%;
+}
+.profile__form {
+  position: relative;
+  background: white;
+  
+  opacity: 0;
+  height: 0;
+  padding: 2em;
+  border-radius: .25em;
+  -webkit-filter: drop-shadow(0 0 2em rgba(0,0,0,0.2));
+  transition: 
+    opacity .4s ease-in-out,
+    height .4s ease-in-out,
+    transform .4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+    padding .4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.profile__fields {
+  opacity: 0;
+  
+  transition: opacity .2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.profile__avatar {
+  position: absolute;
+  z-index: 1;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 1.25em;
+  overflow: hidden;
+  width: 7em;
+  height: 7em;
+  display: block;
+  transition: transform .3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  will-change: transform;
+}
+.profile__avatar:focus {
+  outline: 0;
+}
+.profile__footer {
+  padding-top: 0.5em;
+}
+
+
+/* Form */
+.field {
+  position: relative;
+  margin-bottom: 0.5em;
+}
+.label {
+  position: absolute;
+  left:0px;
+  height: 2rem;
+  line-height: 2rem;
+  bottom: 0;
+  color: #999;
+  transition: all .3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  font-weight: 400;
+}
+
+.label-static{
+  color: #999;
+  font-size: 0.8em;
+  font-weight: 400;
+}
+
+.gender-label{
+  color: #999;
+  font-size: 0.8em;
+  font-weight: 400;
+}
+.input {
+  width: 100%;
+  font-size: 100%;
+  border: 0;
+  padding: 0;
+  background-color: transparent;
+  height: 2rem;
+  line-height: 2rem;
+  border-bottom: 1px solid #eee;
+  color: #777;
+  transition: all .2s ease-in;
+}
+.input:focus {
+  outline: 0;
+  border-color: #ccc;
+}
+.alert{
+  padding: 7px;
+}
+
+.input-require{
+  border-bottom: 1px solid #D84040;
+}
+
+.select-require{
+  border: 1px solid #D84040;
+}
+
+.form-control{
+  font-size: 0.8em;
+}
+
+/* Using required and a faux pattern to see if input has text from http://stackoverflow.com/questions/16952526/detect-if-an-input-has-text-in-it-using-css */
+.input:focus + .label,
+input:valid + .label {
+  transform: translateY(-100%);
+  font-size: 0.85rem;
+  color: #ccc;
+}
+
+/* Button */
+
+
+/* Intro animation */
+@keyframes intro {
+  from {
+    opacity: 0;
+    top: 0;
+  }
+  to {
+    opacity: 1;
+    top: 50%;
+  }
+}
+    </style>
+</head>
+
+<body>
+  <!--Google Font - Work Sans-->
+<link href='https://fonts.googleapis.com/css?family=Work+Sans:400,300,700' rel='stylesheet' type='text/css'>
+
+<div class="container-eg">
+  
+      <div class="profile profile--open">
+        <div class="profile__form" ng-form="regisForm" ng-show="!RegisSuccess">
+
+          <div class="profile__fields visible-md visible-lg">
+            <a href="#/home" style="color: #777; cursor: pointer;"><label>ลงทะเบียนเข้าร่วมงานเทศกาลโคนมแห่งชาติ</label></a>
+            <hr>
+            <div class="row field">
+              <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                <label for="fieldIDCard" class="label-static">เลขที่บัตรประชาชน*</label>
+                <input type="text" id="fieldIDCard" class="input" required pattern=.*\S.* ng-model="register.IDCard" ng-class="{'input-require':register.IDCard == null}"  ui-mask="9-9999-99999-99-9" model-view-value="false"  ui-mask-placeholder=""  ui-mask-placeholder-char="space" ng-blur="checkIDCardProfile(register)" />
+                
+              </div>
+              <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                <label for="fieldMobile" class="label-static">เบอร์โทรศัพท์มือถือ*</label>
+                <input type="text" id="fieldMobile" class="input" required pattern=.*\S.*  ng-model="register.Mobile" ng-class="{'input-require':register.Mobile == null}" ui-mask="999-999-9999" model-view-value="false"  ui-mask-placeholder=""  ui-mask-placeholder-char="space" />
+                
+              </div>
+            </div>
+            <div class="row field">
+              <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                <label for="fieldFirstname" class="label-static">ชื่อ*</label>
+                <input type="text" id="fieldFirstname" class="input" required pattern=.*\S.*  ng-model="register.Firstname" ng-class="{'input-require':register.Firstname == null}" maxlength="70" ng-disabled="register.UserID != null" />
+                
+              </div>
+              <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                <label for="fieldLastname" class="label-static">นามสกุล*</label>
+                <input type="text" id="fieldLastname" class="input" required pattern=.*\S.*  ng-model="register.Lastname" ng-class="{'input-require':register.Lastname == null}"  maxlength="70" ng-disabled="register.UserID != null" />
+                
+              </div>
+            </div>
+            <div class="row field">
+                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                  <label for="fieldEmail" class="label-static">อีเมล</label>
+                  <input type="email" id="fieldEmail" class="input"  ng-model="register.Email" maxlength="100" />
+                  
+                </div>
+                <label for="" class="col-lg-1 col-md-1 col-sm-3 col-xs-3 gender-label">เพศ*</label>
+                <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                  <input type="radio" ng-model="register.Gender" value="M" ng-disabled="register.UserID != null"> <label class="gender-label">ชาย</label>
+                  <br>
+                  <input type="radio" ng-model="register.Gender" value="F" ng-disabled="register.UserID != null"> <label class="gender-label">หญิง</label>
+                </div>
+            </div>
+            <div class="row field">
+              <label for="" class="col-lg-3 col-md-3 col-sm-12 col-xs-12 gender-label">วัน-เดือน-ปีเกิด*</label>
+              <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
+                <select class="form-control"  name="DateOfBirth" ng-model="register.DateOfBirth" ng-options="date.dayText as date.dayValue for date in DateList" ng-class="{'select-require':register.DateOfBirth == null}" ng-disabled="register.UserID != null">
+                  <option value="">วันที่</option>
+                </select>
+              </div>
+              <div class="col-lg-3 col-md-3 col-sm-4 col-xs-4">
+                <select class="form-control"  name="MonthOfBirth" ng-model="register.MonthOfBirth" ng-options="month.monthText as month.monthValue for month in MonthList" ng-change="changeMonth(register.MonthOfBirth, register.YearOfBirth)" ng-class="{'select-require':register.MonthOfBirth == null}" ng-disabled="register.UserID != null">
+                  <option value="">เดือน</option>
+                </select>
+              </div>
+              <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
+                <select class="form-control"  name="YearOfBirth" ng-model="register.YearOfBirth" ng-options="year.yearText as year.yearValue for year in YearList" ng-change="changeMonth(register.MonthOfBirth, register.YearOfBirth)" ng-class="{'select-require':register.YearOfBirth == null}" ng-disabled="register.UserID != null">
+                  <option value="">ปี</option>
+                </select>
+              </div>
+            </div>
+            <div class="row field">
+              
+            </div>
+            <div class="panel panel-primary">
+              <div class="panel-heading">ที่อยู่</div>
+              <div class="panel-body">
+                <div class="row field">
+                  <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                    <label for="fieldAddressNo" class="label-static">บ้านเลขที่</label>
+                    <input type="text" id="fieldAddressNo" class="input" pattern=.*\S.*  ng-model="register.AddressNo" maxlength="20" ng-disabled="register.UserID != null" />
+                  </div>
+                  <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                    <label for="fieldMoo" class="label-static">หมู่ที่</label>
+                    <input type="text" id="fieldMoo" class="input" pattern=.*\S.*  ng-model="register.Moo" maxlength="20" ng-disabled="register.UserID != null" />
+                  </div>
+                </div>
+                <div class="row field">
+                  <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                    <label for="fieldStreet" class="label-static">ถนน</label>
+                    <input type="text" id="fieldStreet" class="input" pattern=.*\S.*  ng-model="register.Street" maxlength="50" ng-disabled="register.UserID != null" />
+                  </div>
+                  <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                    <label for="fieldSoi" class="label-static">ซอย</label>
+                    <input type="text" id="fieldSoi" class="input" pattern=.*\S.*  ng-model="register.Soi" maxlength="50" ng-disabled="register.UserID != null" />
+                  </div>
+                </div>
+                <div class="row field">
+                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                      <label for="fieldProvince" class="label-static">จังหวัด</label>
+                      <select class="form-control" name="Province" id="province" ng-model="register.ProvinceID" ng-options="province.PROVINCE_ID as province.PROVINCE_NAME for province in ProvinceList" ng-change="setProvince(register.ProvinceID)" ng-disabled="register.UserID != null">
+                        <option value="">กรุณาเลือก</option>
+                      </select>
+                      <input type="hidden" ng-model="register.Province">
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                      <label for="fieldSubProvince" class="label-static">อำเภอ</label>
+                      <select class="form-control" name="SubProvince" id="amphur" ng-model="register.SubProvinceID" ng-options="amphur.AMPHUR_ID as amphur.AMPHUR_NAME for amphur in AmphurList" ng-change="setAmphur(register.SubProvinceID)" ng-disabled="register.UserID != null">
+                        <option value="">กรุณาเลือก</option>
+                      </select>
+                      <input type="hidden" ng-model="register.SubProvince">
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                      <label for="fieldDistrict" class="label-static">ตำบล</label>
+                      <select class="form-control" name="District" id="district" ng-model="register.DistrictID" ng-options="district.DISTRICT_ID as district.DISTRICT_NAME for district in DistrictList"  ng-change="setDistrict(register.DistrictID)" ng-disabled="register.UserID != null">
+                        <option value="">กรุณาเลือก</option>
+                      </select>
+                      <input type="hidden" ng-model="register.District">
+                    </div>
+                  </div>
+                  <div class="row field">
+                  <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                    <label for="fieldPostcode" class="label-static">รหัสไปรษณีย์</label>
+                    <input type="text" id="fieldPostcode" class="input" pattern=.*\S.*  ng-model="register.Postcode" maxlength="5" ng-disabled="register.UserID != null" />
+                  </div>
+                  
+                </div>
+                
+              </div>
+            </div>
+            </div>
+            <div class="profile__fields visible-sm visible-xs"  ng-show="!RegisSuccess" style="padding-top: 38em;">
+            <label>ลงทะเบียนเข้าร่วมงานเทศกาลโคนมแห่งชาติ</label>
+            <hr>
+            <div class="row field">
+              <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                <label for="mfieldIDCard" class="label-static">เลขที่บัตรประชาชน*</label>
+                <input type="text" id="mfieldIDCard" class="input" required pattern=.*\S.* ng-model="register.IDCard" ng-class="{'input-require':register.IDCard == null}"  ui-mask="9-9999-99999-99-9" model-view-value="false"  ui-mask-placeholder=""  ui-mask-placeholder-char="space" ng-blur="checkIDCardProfile(register)" />
+                
+              </div>
+              <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                <label for="mfieldMobile" class="label-static">เบอร์โทรศัพท์มือถือ*</label>
+                <input type="text" id="mfieldMobile" class="input" required pattern=.*\S.*  ng-model="register.Mobile" ng-class="{'input-require':register.Mobile == null}" ui-mask="999-999-9999" model-view-value="false"  ui-mask-placeholder=""  ui-mask-placeholder-char="space" />
+                
+              </div>
+            </div>
+            <div class="row field">
+              <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                <label for="mfieldFirstname" class="label-static">ชื่อ*</label>
+                <input type="text" id="mfieldFirstname" class="input" required pattern=.*\S.*  ng-model="register.Firstname" ng-class="{'input-require':register.Firstname == null}" maxlength="70" ng-disabled="register.UserID != null" />
+                
+              </div>
+              <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                <label for="mfieldLastname" class="label-static">นามสกุล*</label>
+                <input type="text" id="mfieldLastname" class="input" required pattern=.*\S.*  ng-model="register.Lastname" ng-class="{'input-require':register.Lastname == null}"  maxlength="70" ng-disabled="register.UserID != null" />
+                
+              </div>
+            </div>
+            <div class="row field">
+                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                  <label for="mfieldEmail" class="label-static">อีเมล</label>
+                  <input type="email" id="mfieldEmail" class="input" ng-model="register.Email" maxlength="100" />
+                  
+                </div>
+                <label for="" class="col-lg-3 col-md-3 col-sm-3 col-xs-3 gender-label">เพศ*</label>
+                <div class="col-lg-3 col-md-3 col-sm-3 col-xs-6">
+                  <input type="radio" ng-model="register.Gender" value="M" ng-disabled="register.UserID != null"> <label class="gender-label">ชาย</label>
+                  <br>
+                  <input type="radio" ng-model="register.Gender" value="F" ng-disabled="register.UserID != null"> <label class="gender-label">หญิง</label>
+                </div>
+            </div>
+            <div class="row field">
+              <label for="" class="col-lg-3 col-md-3 col-sm-12 col-xs-12 gender-label">วัน-เดือน-ปีเกิด*</label>
+              <div class="col-lg-2 col-md-2 col-sm-4 col-xs-12">
+                <select class="form-control"  name="DateOfBirth" ng-model="register.DateOfBirth" ng-options="date.dayText as date.dayValue for date in DateList" ng-class="{'select':register.DateOfBirth == null}" ng-disabled="register.UserID != null">
+                  <option value="">วันที่</option>
+                </select>
+              </div>
+              <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
+                <select class="form-control"  name="MonthOfBirth" ng-model="register.MonthOfBirth" ng-options="month.monthText as month.monthValue for month in MonthList" ng-change="changeMonth(register.MonthOfBirth, register.YearOfBirth)" ng-class="{'select':register.MonthOfBirth == null}" ng-disabled="register.UserID != null">
+                  <option value="">เดือน</option>
+                </select>
+              </div>
+              <div class="col-lg-2 col-md-2 col-sm-4 col-xs-12">
+                <select class="form-control"  name="YearOfBirth" ng-model="register.YearOfBirth" ng-options="year.yearText as year.yearValue for year in YearList" ng-change="changeMonth(register.MonthOfBirth, register.YearOfBirth)" ng-class="{'select':register.YearOfBirth == null}" ng-disabled="register.UserID != null">
+                  <option value="">ปี</option>
+                </select>
+              </div>
+            </div>
+            <div class="row field">
+              
+            </div>
+            <div class="panel panel-primary">
+              <div class="panel-heading">ที่อยู่</div>
+              <div class="panel-body">
+                <div class="row field">
+                  <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                    <label for="mfieldAddressNo" class="label-static">บ้านเลขที่</label>
+                    <input type="text" id="mfieldAddressNo" class="input" pattern=.*\S.*  ng-model="register.AddressNo" maxlength="20" ng-disabled="register.UserID != null" />
+                  </div>
+                  <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                    <label for="mfieldMoo" class="label-static">หมู่ที่</label>
+                    <input type="text" id="mfieldMoo" class="input" pattern=.*\S.*  ng-model="register.Moo" maxlength="20" ng-disabled="register.UserID != null"  />
+                  </div>
+                </div>
+                <div class="row field">
+                  <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                    <label for="mfieldStreet" class="label-static">ถนน</label>
+                    <input type="text" id="mfieldStreet" class="input" pattern=.*\S.*  ng-model="register.Street" maxlength="50" ng-disabled="register.UserID != null" />
+                  </div>
+                  <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                    <label for="mfieldSoi" class="label-static">ซอย</label>
+                    <input type="text" id="mfieldSoi" class="input" pattern=.*\S.*  ng-model="register.Soi" maxlength="50" ng-disabled="register.UserID != null" />
+                  </div>
+                </div>
+                <div class="row field">
+                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                      <label for="mfieldProvince" class="label-static">จังหวัด</label>
+                      <select class="form-control" name="Province" id="mprovince" ng-model="register.ProvinceID" ng-options="province.PROVINCE_ID as province.PROVINCE_NAME for province in ProvinceList" ng-change="setProvince(register.ProvinceID)" ng-disabled="register.UserID != null">
+                        <option value="">กรุณาเลือก</option>
+                      </select>
+                      <input type="hidden" ng-model="register.Province">
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                      <label for="mfieldSubProvince" class="label-static">อำเภอ</label>
+                      <select class="form-control" name="SubProvince" id="mamphur" ng-model="register.SubProvinceID" ng-options="amphur.AMPHUR_ID as amphur.AMPHUR_NAME for amphur in AmphurList" ng-change="setAmphur(register.SubProvinceID)" ng-disabled="register.UserID != null">
+                        <option value="">กรุณาเลือก</option>
+                      </select>
+                      <input type="hidden" ng-model="register.SubProvince">
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                      <label for="mfieldDistrict" class="label-static">ตำบล</label>
+                      <select class="form-control" name="District" id="mdistrict" ng-model="register.DistrictID" ng-options="district.DISTRICT_ID as district.DISTRICT_NAME for district in DistrictList"  ng-change="setDistrict($index)" ng-disabled="register.UserID != null">
+                        <option value="">กรุณาเลือก</option>
+                      </select>
+                      <input type="hidden" ng-model="register.District">
+                    </div>
+                  </div>
+                  <div class="row field">
+                  <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                    <label for="fieldPostcode" class="label-static">รหัสไปรษณีย์</label>
+                    <input type="text" id="fieldPostcode" class="input" pattern=.*\S.*  ng-model="register.Postcode" maxlength="5" ng-disabled="register.UserID != null" />
+                  </div>
+                  
+                </div>
+                
+              </div>
+            </div>
+            </div>
+            <div class="profile__footer text-center" style="height: 70px;">
+              <button class="btn btn-primary"  ng-click="registerMember(register)" ng-disabled="regisForm.$invalid">ลงทะเบียน</button>
+              
+              <div class="col-lg-12 col-sm-12 col-xs-12" style="font-size: 0.8em;">
+                  <div ng-show="showRegisError" class="alert alert-danger">การลงทะเบียนล้มเหลว, {{errorMsg}}</div>
+                  <!--<div ng-show="showRegisSuccess" class="alert alert-success">สร้างบัญชีผู้ใช้สำเร็จ {{msg}}</div>-->
+                  <div ng-show="showRegisUserPass" class="alert alert-danger">กรุณากรอกข้อมูลที่มีกรอบแดงให้ครบทุกช่อง</div>
+                </div>
+            </div>
+          </div>
+          <div class="profile__form" ng-form="successForm" ng-show="RegisSuccess" style="margin-top: -5em; font-size: 0.8em;"><!---->
+            <div class="row profile__fields">
+              <div class="col-md-8 col-xs-12 col-md-offset-2 text-center">
+                <span class="glyphicon glyphicon-ok" style="font-size: 3em; font-weight: bolder; color: green;"></span>
+                <br> ขอบคุณที่ลงทะเบียนเข้าร่วมงานเทศกาลโคนมแห่งชาติ
+                <br>ระบบได้ยืนยันการลงทะเบียนผ่านทาง SMS ไปยังหมายเลขโทรศัพท์มือถือที่ท่านได้ระบุไว้ 
+                <br><a ng-click="RegisSuccess = false">กลับไปหน้าลงทะเบียน</a>
+                <br>
+                <br>
+              </div>
+            </div>
+          </div>
+    </div>
+  </div>
+      
+</body>
+</html>

@@ -1,0 +1,16 @@
+<div ng-include src="'html/top_menu_admin.html'"></div>
+<div class="row">
+	<div class="col-lg-6 col-lg-offset-3 text-center">
+		จำนวนผู้ลงทะเบียนในระบบทั้งสิน {{CountRegister}} คน
+	</div>
+</div>
+<div class="row">
+	<div class="col-lg-6 col-lg-offset-3 text-center">
+		ทำแบบสอบถามทั้งสิน {{CountEvaluate}} คน
+	</div>
+</div>
+<div class="row">
+	<div class="col-lg-6 col-lg-offset-3 text-center">
+		<button class="btn btn-primary" ng-click="exportExcel()">รายงานสรุปแบบประเมิน</button>
+	</div>
+</div>
