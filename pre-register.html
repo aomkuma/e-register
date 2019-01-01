@@ -204,17 +204,17 @@ input:valid + .label {
         <div class="profile__form" ng-form="regisForm" ng-show="!RegisSuccess">
 
           <div class="profile__fields visible-md visible-lg">
-            <a href="#/home" style="color: #777; cursor: pointer;"><label>ลงทะเบียนเข้าร่วมงานเทศกาลโคนมแห่งชาติ</label></a>
+            <a href="#/home" style="color: #777; cursor: pointer;"><label>ลงทะเบียนเข้าร่วมงานเทศกาลโคนมแห่งชาติ ประจำปี 2562</label></a>
             <hr>
             <div class="row field">
               <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
                 <label for="fieldIDCard" class="label-static">เลขที่บัตรประชาชน*</label>
-                <input type="text" id="fieldIDCard" class="input" required pattern=.*\S.* ng-model="register.IDCard" ng-class="{'input-require':register.IDCard == null}"  ui-mask="9-9999-99999-99-9" model-view-value="false"  ui-mask-placeholder=""  ui-mask-placeholder-char="space" ng-blur="checkIDCardProfile(register)" />
+                <input type="text" id="fieldIDCard" class="input" required pattern=.*\S.* ng-model="register.IDCard" ng-class="{'input-require':register.IDCard == null}"  ui-mask="9-9999-99999-99-9" model-view-value="false"  ui-mask-placeholder=""  ui-mask-placeholder-char="space" ng-blur="checkIDCardProfile(register.IDCard)" />
                 
               </div>
               <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
                 <label for="fieldMobile" class="label-static">เบอร์โทรศัพท์มือถือ*</label>
-                <input type="text" id="fieldMobile" class="input" required pattern=.*\S.*  ng-model="register.Mobile" ng-class="{'input-require':register.Mobile == null}" ui-mask="999-999-9999" model-view-value="false"  ui-mask-placeholder=""  ui-mask-placeholder-char="space" />
+                <input type="text" id="fieldMobile" class="input" required pattern=.*\S.*  ng-model="register.Mobile" ng-class="{'input-require':register.Mobile == null}" ui-mask="999-999-9999" model-view-value="false"  ui-mask-placeholder=""  ui-mask-placeholder-char="space" ng-blur="checkIDCardProfile(register.Mobile)" />
                 
               </div>
             </div>
@@ -327,12 +327,12 @@ input:valid + .label {
             <div class="row field">
               <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
                 <label for="mfieldIDCard" class="label-static">เลขที่บัตรประชาชน*</label>
-                <input type="text" id="mfieldIDCard" class="input" required pattern=.*\S.* ng-model="register.IDCard" ng-class="{'input-require':register.IDCard == null}"  ui-mask="9-9999-99999-99-9" model-view-value="false"  ui-mask-placeholder=""  ui-mask-placeholder-char="space" ng-blur="checkIDCardProfile(register)" />
+                <input type="text" id="mfieldIDCard" class="input" required pattern=.*\S.* ng-model="register.IDCard" ng-class="{'input-require':register.IDCard == null}"  ui-mask="9-9999-99999-99-9" model-view-value="false"  ui-mask-placeholder=""  ui-mask-placeholder-char="space" ng-blur="checkIDCardProfile(register.IDCard)" />
                 
               </div>
               <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
                 <label for="mfieldMobile" class="label-static">เบอร์โทรศัพท์มือถือ*</label>
-                <input type="text" id="mfieldMobile" class="input" required pattern=.*\S.*  ng-model="register.Mobile" ng-class="{'input-require':register.Mobile == null}" ui-mask="999-999-9999" model-view-value="false"  ui-mask-placeholder=""  ui-mask-placeholder-char="space" />
+                <input type="text" id="mfieldMobile" class="input" required pattern=.*\S.*  ng-model="register.Mobile" ng-class="{'input-require':register.Mobile == null}" ui-mask="999-999-9999" model-view-value="false"  ui-mask-placeholder=""  ui-mask-placeholder-char="space" ng-blur="checkIDCardProfile(register.Mobile)" />
                 
               </div>
             </div>

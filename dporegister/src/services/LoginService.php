@@ -24,6 +24,7 @@
                         ->leftJoin("amphur", "amphur.AMPHUR_NAME", '=', 'attendee.SubProvince')
                         ->leftJoin("district", "district.DISTRICT_NAME", '=', 'attendee.District')
                         ->where('IDCard', $username)
+                        ->orWhere('Mobile', $username)
                         ->first();      
         }
 
@@ -137,15 +138,21 @@
         }
 
         public static function saveRegisterLog($obj){
+            $action = '';
             $model = RegisterLog::where('user_id', $obj['user_id'])->where('years', $obj['years'])->first();
             if(empty($model)){
                 $model = new RegisterLog;    
+                $action = 'add';
+            }else{
+                $action = 'update';
             }
             
             $model->user_id = $obj['user_id'];
             $model->years = $obj['years'];
             $model->register_date = $obj['register_date'];
             $model->save();
+
+            return $action;
         }
         
     }

@@ -108,15 +108,17 @@
                     
                     // Add new member
                     $attendee = LoginService::registerMember($obj);   
-
+                    if(empty($obj['UserID'])){
+                        $obj['UserID'] = $attendee['UserID'];
+                    }
                     $RegisterLog = [];
                     $RegisterLog['user_id'] = $obj['UserID'];
                     $RegisterLog['years'] = date('Y');
                     $RegisterLog['register_date'] = date('Y-m-d');
 
-                    LoginService::saveRegisterLog($RegisterLog);
+                    $action = LoginService::saveRegisterLog($RegisterLog);
                     
-                    if(!empty($attendee))
+                    if(!empty($attendee) && $action == 'add')
                     {   
                         // $smsContent = 'รหัสเข้าใช้งาน Wifi ของหมายเลขบัตรประชาชน ' . $attendee['IDCard'] . ' คือ ' . $attendee['Wifi'];
                         $smsContent = 'ขอบคุณที่ลงทะเบียนเข้าร่วมงานเทศกาลโคนมแห่งชาติ';
@@ -126,7 +128,7 @@
                         if($smsResult !== false){
                             $this->logger->info('SMS Result Success '); 
                             // $this->data_result['DATA'] = 'กรุณาตรวจสอบรหัสเข้าใช้งาน Wifi ที่ส่งไปยังเบอร์โทรศัพท์หมายเลข ' . $attendee['Mobile'];
-                            $this->data_result['DATA'] = 'ขอบคุณที่ลงทะเบียนเข้าร่วมงานเทศกาลโคนมแห่งชาติ';
+                            $this->data_result['DATA'] = 'ขอบคุณที่ลงทะเบียนเข้าร่วมงานเทศกาลโคนมแห่งชาติ ประจำปี 2562';
                         }else{
                             $this->logger->info('SMS Result Failed '); 
                             $this->data_result['STATUS'] = 'ERROR';
@@ -179,7 +181,7 @@
                         if($smsResult !== false){
                             $this->logger->info('SMS Result Success '); 
                             // $this->data_result['DATA'] = 'กรุณาตรวจสอบรหัสเข้าใช้งาน Wifi ที่ส่งไปยังเบอร์โทรศัพท์หมายเลข ' . $attendee['Mobile'];
-                            $this->data_result['DATA'] = 'ขอบคุณที่ลงทะเบียนเข้าร่วมงานเทศกาลโคนมแห่งชาติ';
+                            $this->data_result['DATA'] = 'ขอบคุณที่ลงทะเบียนเข้าร่วมงานเทศกาลโคนมแห่งชาติ ประจำปี 2562';
                             $this->data_result['UserData'] = $attendee;
                         }else{
                             $this->logger->info('SMS Result Failed '); 
