@@ -164,13 +164,21 @@
                 $obj = $request->getParsedBody();
                 $obj = $obj['obj'];
                 // find duplicate id card
-                $chkDuplicateIDCard = LoginService::checkDuplicateIDCard($obj['IDCard']);    
-                $chkDuplicateMobile = LoginService::checkDuplicateMobile($obj['Mobile']);    
+                $chkDuplicateIDCard = LoginService::checkDuplicateIDCard($obj['IDCard'], $obj['UserID']);    
+                $chkDuplicateMobile = LoginService::checkDuplicateMobile($obj['Mobile'], $obj['UserID']);    
                 if(empty($chkDuplicateIDCard[UserID]) && empty($chkDuplicateMobile[UserID])){
                     
                     // Add new member
                     $obj['RegisterType'] = 'MANUAL';
                     $attendee = LoginService::registerMember($obj);   
+
+                    $RegisterLog = [];
+                    $RegisterLog['user_id'] = $obj['UserID'];
+                    $RegisterLog['years'] = date('Y');
+                    $RegisterLog['register_date'] = date('Y-m-d');
+
+                    $action = LoginService::saveRegisterLog($RegisterLog);
+                    
                     if(!empty($attendee))
                     {   
                         // $smsContent = 'รหัสเข้าใช้งาน Wifi ของหมายเลขบัตรประชาชน ' . $attendee['IDCard'] . ' คือ ' . $attendee['Wifi'];
@@ -252,6 +260,40 @@
                 $this->logger->info('Find by id card : '. $idCard );
                 // System login
                 $user = LoginService::findWithIDCard($idCard);    
+                
+                $this->logger->info($user);
+                if(!empty($user[UserID])){
+                    unset($user[Password]);
+                    
+                    // Get menu in this user's group
+                    //$menuList = LoginService::getMenuList($user['UserID']);       
+                    $user['CitizenID'] = $user['IDCard'];
+                    $user['NameTH_FirstName'] = $user['Firstname'];
+                    $user['NameTH_SurName'] = $user['Lastname'];
+                    $user['Birthday'] = date('d/m/Y', strtotime($user['Birthdate']));
+                    $user['BirthDate'] = date('d/m/Y', strtotime($user['Birthdate']));
+                    $this->data_result['DATA']['UserData'] = $user;
+                    $this->data_result['DATA']['UserDataEncode'] = base64_encode($user);
+                }else{
+                    $this->data_result['STATUS'] = 'ERROR';
+                    $this->data_result['DATA'] = 'ไม่พบผู้ใช้งาน กรุณาลงทะเบียน';
+                }
+                
+                return $this->returnResponse(200, $this->data_result, $response, false);
+                
+            }catch(\Exception $e){
+                return $this->returnSystemErrorResponse($this->logger, $this->data_result, $e, $response);
+            }
+        }   
+
+        public function findRegisteredWithIDCard($request, $response, $args){
+            try{
+                $loginObj = $request->getParsedBody();
+                $idCard = $loginObj['obj']['IDCard'];
+                
+                $this->logger->info('Find by id card : '. $idCard );
+                // System login
+                $user = LoginService::findRegisteredWithIDCard($idCard);    
                 
                 $this->logger->info($user);
                 if(!empty($user[UserID])){

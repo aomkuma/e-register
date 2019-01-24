@@ -336,7 +336,7 @@ function convertSQLDateTimeToReportDate(d){
 
 function getYearList(loop)
 {
-    var startYear = 2017;
+    var startYear = 2018;
     var yearList = [];
     for(var i =0 ; i < loop; i++){
         yearList.push({'yearValue': startYear + i + 543, 'yearText' : startYear + i});
@@ -630,8 +630,8 @@ app.filter('FindProvinceName', function () {
         if (input !== undefined && input !== null) {
             var i = 0, len = input.length;
             for (; i < len; i++) {
-                console.log(input[i].PROVINCE_NAME, '==' ,val);
-                if (input[i].PROVINCE_NAME == val) {
+                // console.log(input[i].PROVINCE_NAME, '==' ,val);
+                if (input[i].PROVINCE_NAME.trim() == val.trim()) {
                     return input[i].PROVINCE_ID;
                 }
             }
@@ -664,8 +664,8 @@ app.filter('FindAmphurName', function () {
         if (input !== undefined && input !== null) {
             var i = 0, len = input.length;
             for (; i < len; i++) {
-                console.log(input[i].AMPHUR_NAME, '==' ,val);
-                if (input[i].AMPHUR_NAME == val) {
+                // console.log(input[i].AMPHUR_NAME.trim(), '==' ,val.trim());
+                if (input[i].AMPHUR_NAME.trim() == val.trim()) {
                     return input[i].AMPHUR_ID;
                 }
             }
@@ -699,7 +699,7 @@ app.filter('FindDistrictName', function () {
             var i = 0, len = input.length;
             for (; i < len; i++) {
                 //console.log(input[i].UserID, '==' ,val);
-                if (input[i].DISTRICT_NAME == val) {
+                if (input[i].DISTRICT_NAME.trim() == val.trim()) {
                     return input[i].DISTRICT_ID;
                 }
             }

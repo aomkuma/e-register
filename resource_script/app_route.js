@@ -6,6 +6,31 @@ app.config(function($routeProvider) {
         templateUrl : "pre-register.html",
         controller : "PreRegisterController"
     })
+
+    .when("/icon-list", {
+        templateUrl : "html/icon/main.html",
+        controller : "IconListController"
+    })
+
+    .when("/question-list", {
+        templateUrl : "html/question/main.html",
+        controller : "QuestionListController"
+    })
+    
+    .when("/question-detail/:question_year_id", {
+        templateUrl : "html/question/question-detail.html",
+        controller : "QuestionDetailController"
+    })
+
+    .when("/question-data/:question_section_id", {
+        templateUrl : "html/question/question-data.html",
+        controller : "QuestionDataController"
+    })
+
+    .when("/choice-data/:question_id", {
+        templateUrl : "html/question/choice-data.html",
+        controller : "ChoiceDataController"
+    })
     
     .when("/home", {
         templateUrl : "home.html",

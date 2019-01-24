@@ -20,8 +20,9 @@
                 $obj = $request->getParsedBody();
                 $keyword = $obj['obj']['keyword'];
                 $registerType = $obj['obj']['registerType'];
+                $years = $obj['obj']['years'];
                 $offset = $obj['obj']['offset'];
-                $DataList = AttendeeService::getAttendeeList($keyword, $registerType, $offset);
+                $DataList = AttendeeService::getAttendeeList($keyword, $registerType, $years, $offset);
                 
                 $this->data_result['DATA'] = $DataList;
 
@@ -35,10 +36,10 @@
         public function updateRewards($request, $response, $args){
             try{
                 $obj = $request->getParsedBody();
-                $UserID = $obj['obj']['UserID'];
+                $id = $obj['obj']['id'];
                 $Rewards = $obj['obj']['Rewards'];
                 
-                $updateResult = AttendeeService::updateRewards($UserID, $Rewards);
+                $updateResult = AttendeeService::updateRewards($id, $Rewards);
                 
                 if(!empty($updateResult)){
                     $this->data_result['DATA'] = $updateResult;
@@ -58,10 +59,10 @@
             try{
 
                 $obj = $request->getParsedBody();
-                $UserID = $obj['obj']['UserID'];
+                $id = $obj['obj']['id'];
                 $RewardType = $obj['obj']['RewardType'];
                 
-                $updateResult = AttendeeService::updateRewardType($UserID, $RewardType);
+                $updateResult = AttendeeService::updateRewardType($id, $RewardType);
                 
                 if($updateResult){
                     $this->data_result['DATA'] = $updateResult;

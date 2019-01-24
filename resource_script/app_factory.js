@@ -55,7 +55,8 @@ app.factory('IndexOverlayFactory', function(){
 	return indexVar;
 });
 
-app.factory('HTTPService', ['$http', '$q', function($http, $q){
+
+app.factory('HTTPService', ['$http', '$q', 'Upload', function($http, $q, Upload){
     return {
         clientRequest : function(action, obj) {
             return $http.post(servicesUrl + '/dporegister/public/' + action + '/',{"obj":obj})
@@ -67,6 +68,20 @@ app.factory('HTTPService', ['$http', '$q', function($http, $q){
                         return returnErrorResponse(errResponse);
                     }
                 );
+        },
+
+        uploadRequest : function(action, obj) {
+            return Upload.upload({
+                url: servicesUrl + '/dporegister/public/' + action + '/',
+                data: {"obj":obj}
+            }).then(
+                function(response){
+                    return returnResponse(response);                    
+                }, 
+                function(errResponse){
+                    return returnErrorResponse(errResponse);
+                }
+            );
         }
     }
 }]);

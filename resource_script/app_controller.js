@@ -174,7 +174,7 @@ app.controller('AttendeeListController', function($scope, $uibModal, $location, 
     $scope.loadData = function(condition){
         if($scope.continueLoad){
             $scope.tableLoad = true;
-            var params = {'keyword':condition.keyword, 'registerType':condition.registerType, 'offset':$scope.dataOffset};
+            var params = {'keyword':condition.keyword, 'registerType':condition.registerType, 'years':$scope.condition.years, 'offset':$scope.dataOffset};
             HTTPService.clientRequest('attendeeList', params).then(function (result) {
                 if(result.data.STATUS == 'OK'){
                     $scope.tableLoad = false;
@@ -241,7 +241,7 @@ app.controller('AttendeeListController', function($scope, $uibModal, $location, 
             });
     }
 
-    $scope.confirmChangeRewards = function(UserID, Rewards, index){
+    $scope.confirmChangeRewards = function(id, Rewards, index){
         var RecieveRewards = '';
         if(Rewards == 'Y'){
             RecieveRewards = 'เลือกรับของรางวัล';
@@ -265,7 +265,7 @@ app.controller('AttendeeListController', function($scope, $uibModal, $location, 
 
             modalInstance.result.then(function (valResult) {
                 if(valResult == 'OK'){
-                    var params = {'UserID':UserID, 'Rewards':Rewards};
+                    var params = {'id':id, 'Rewards':Rewards};
                     IndexOverlayFactory.overlayShow();
                     HTTPService.clientRequest('updateRewards', params).then(function (result) {
                         IndexOverlayFactory.overlayHide();
@@ -305,9 +305,9 @@ app.controller('AttendeeListController', function($scope, $uibModal, $location, 
         });
 
         modalInstance.result.then(function (valResult) {
-            // console.log(valResult.RewardType , RewardType);
+            console.log(valResult);
             if(valResult.RewardType != RewardType){
-                var params = {'UserID':valResult.UserID, 'RewardType':valResult.RewardType};
+                var params = {'id':valResult.id, 'RewardType':valResult.RewardType};
                 HTTPService.clientRequest('updateRewardType', params).then(function (result) {
                     if(result.data.STATUS == 'OK'){
                         $scope.DataList[index].RewardType = valResult.RewardType;
@@ -328,12 +328,16 @@ app.controller('AttendeeListController', function($scope, $uibModal, $location, 
         }
     }
 
+    $scope.convertDate = function(date){
+        return convertDateToFullThaiDateIgnoreTime(new Date(date));
+    }
+
     $scope.DisabledSearch = false;
     $scope.dataOffset = 0;
     $scope.tableLoad = false;
     $scope.continueLoad = true;
     $scope.DataList = [];
-    $scope.condition = {'keyword':'', 'registerType':''};
+    $scope.condition = {'keyword':'', 'registerType':'', 'years' : '2019'};
     $scope.loadData($scope.condition);
 
 });
@@ -496,7 +500,7 @@ app.controller('RegistrationController',function($scope, $routeParams, $filter, 
         });
     }
 
-    $scope.getProvinceList = function(){
+    $scope.getProvinceList = function(province, subProvince, district){
         HTTPService.clientRequest('getProvince', []).then(function (res) {
             IndexOverlayFactory.overlayHide();
             if(res.data.STATUS == 'OK'){
@@ -504,6 +508,16 @@ app.controller('RegistrationController',function($scope, $routeParams, $filter, 
                 // Find province id
                 $scope.register.ProvinceID = $filter('FindProvinceName')($scope.ProvinceList, $scope.register.Province);  
                 $scope.setProvince($scope.register.ProvinceID);
+
+                if(province != null){
+                    $scope.setProvince(province);
+                }
+                if(subProvince != null){
+                    $scope.setAmphur(subProvince);
+                }
+                if(district != null){
+                    $scope.setDistrict(district);
+                }
             }
         });   
     }
@@ -552,6 +566,29 @@ app.controller('RegistrationController',function($scope, $routeParams, $filter, 
         $scope.DateList = getTotalDayInMonth(month, year);
     }
 
+    $scope.checkIDCardProfile = function(idcard){
+        console.log(idcard);
+        IndexOverlayFactory.overlayShow();
+        HTTPService.clientRequest('findWithIDCard', {'IDCard' : idcard}).then(function (res) {
+            IndexOverlayFactory.overlayHide();
+            if(res.data.STATUS == 'OK'){
+                $scope.register = res.data.DATA.UserData;
+                var bt = $scope.register.BirthDate.split('/');
+                $scope.register.YearOfBirth = parseInt(bt[2]);
+                $scope.register.MonthOfBirth = (bt[1]);
+                $scope.register.DateOfBirth = (bt[0]);
+                console.log($scope.register.ProvinceID);
+                $scope.register.ProvinceID = parseInt($scope.register.ProvinceID);
+                $scope.ProvinceList = $scope.getProvinceList($scope.register.ProvinceID, $scope.register.SubProvinceID, $scope.register.DistrictID);
+                // $scope.setProvince($scope.register.ProvinceID);
+                // $scope.setAmphur($scope.register.SubProvinceID);
+                // $scope.setDistrict($scope.register.DistrictID);
+                // $scope.YearList = getYearOfBirthList();
+            }
+            IndexOverlayFactory.overlayHide();
+        });   
+    }
+
     $scope.YearList = getYearOfBirthList();
     $scope.MonthList = getThaiMonth();
     $scope.DateList = getTotalDayInMonth(null, null);
@@ -563,8 +600,10 @@ app.controller('RegistrationController',function($scope, $routeParams, $filter, 
     setTimeout(function(){
         if($routeParams.IDCard != ''){
             $scope.register.IDCard = $routeParams.IDCard;
+            $scope.checkIDCardProfile($scope.register.IDCard);
+
         }
-        if($routeParams.smartcard != ''){
+        if($routeParams.smartcard != undefined && $routeParams.smartcard != null && $routeParams.smartcard != ''){
             $scope.smartcard = angular.fromJson(b64DecodeUnicode($routeParams.smartcard.replace(' ', '+')));
             $scope.register.IDCard = $scope.smartcard.CitizenID;
             $scope.register.Firstname = $scope.smartcard.NameTH_FirstName;
@@ -747,7 +786,7 @@ app.controller('SmartcardRegisterController',function($scope, $routeParams, $fil
         
         
         if($routeParams.registype != 'nonidcard'){
-            HTTPService.clientRequest('findWithIDCard',{'IDCard':$scope.register.IDCard}).then(function(result){
+            HTTPService.clientRequest('findRegisteredWithIDCard',{'IDCard':$scope.register.IDCard}).then(function(result){
                 if(result.data.STATUS == 'OK'){
                     $scope.LoginSmartCard = result.data.DATA.UserData;
                     $scope.register.UserID = result.data.DATA.UserData.UserID;
@@ -803,9 +842,13 @@ app.controller('EvaluateController',function($scope, $routeParams, $filter, HTTP
     $scope.getQuestions = function(){
         HTTPService.clientRequest('getQuestions',{}).then(function(result){
             if(result.data.STATUS == 'OK'){
-                $scope.QuestionList = result.data.DATA;
+                $scope.QuestionList = result.data.DATA.Questions;
+                $scope.QuestionTypeList = result.data.DATA.QuestionSection;
+                console.log($scope.QuestionList);
                 $scope.QuestionList.splice(0,2);
                 $scope.TotalQuestion = $filter('CountAnswers')($scope.QuestionList, $scope.ShowSection);
+                console.log($scope.QuestionList);
+                $scope.BG_IMG = $scope.QuestionList[0].background_img;
             }else{
                 alert('ไม่สามารถโหลดแบบสอบถามได้ กรุณากดปุ่ม F5 เพื่อโหลดแบบสอบถามอีกครั้ง');
             }
@@ -840,6 +883,9 @@ app.controller('EvaluateController',function($scope, $routeParams, $filter, HTTP
         }else{
             $scope.AllowNextButton = false;
         }
+
+        $scope.TotalPercent = Math.ceil(($scope.DoQuestions.length / $scope.QuestionList.length) * 100);
+        console.log($scope.TotalPercent);
     }
 
     $scope.checkManyValue = function(val, data){
@@ -881,6 +927,8 @@ app.controller('EvaluateController',function($scope, $routeParams, $filter, HTTP
         }else{
             $scope.AllowNextButton = false;
         }
+        $scope.TotalPercent = Math.ceil(($scope.DoQuestions.length / $scope.QuestionList.length) * 100);
+        console.log($scope.TotalPercent);
     }
 
     $scope.backStep = function(){
@@ -909,7 +957,7 @@ app.controller('EvaluateController',function($scope, $routeParams, $filter, HTTP
     document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
     }
 
-console.log($scope.currentUser);
+    console.log($scope.currentUser);
     $scope.finish = function(){
 
         var params = {'DoQuestions':$scope.DoQuestions,'UserID':$scope.currentUser.UserID};
@@ -924,7 +972,34 @@ console.log($scope.currentUser);
         });
     }
 
-    $scope.ShowSection = 1;
+    $scope.prevQuestion = function(){
+        $scope.QuestionNo--;
+        // $scope.ShowSection = $scope.QuestionList[$scope.QuestionNo - 1].QuestionsSection;
+        $scope.findSectionIndex($scope.QuestionNo - 1);
+        $scope.BG_IMG = $scope.QuestionList[$scope.QuestionNo - 1].background_img;
+        console.log($scope.QuestionNo);
+    }
+    $scope.nextQuestion = function(){
+        $scope.QuestionNo++;
+        // $scope.ShowSection = $scope.QuestionList[$scope.QuestionNo - 1].QuestionsSection;
+        $scope.findSectionIndex($scope.QuestionNo - 1);
+        $scope.BG_IMG = $scope.QuestionList[$scope.QuestionNo - 1].background_img;
+        console.log($scope.QuestionNo);
+    }
+
+    $scope.findSectionIndex = function(questionNo){
+        for(var i = 0; i < $scope.QuestionTypeList.length; i++){
+            console.log($scope.QuestionTypeList[i].id.toString() , $scope.QuestionList[questionNo].QuestionsSection);
+            if($scope.QuestionTypeList[i].id.toString() == $scope.QuestionList[questionNo].QuestionsSection){
+                $scope.ShowSection = i;
+                break;
+            }
+        }
+    }
+
+    $scope.BG_IMG = '';
+    $scope.TotalPercent = 0;
+    $scope.ShowSection = 0;
     $scope.QuestionTypeList =[{'section':'ส่วนที่ 1 ข้อมูลทั่วไปของผู้ตอบแบบสอบถาม','sub_section':''}
                             ,{'section':'ส่วนที่ 2  ความคิดเห็นเกี่ยวกับการแสดงความพึงพอใจในการจัดงานเทศกาลโคนมแห่งชาติ ประจำปี 2561','section':'ความพึงพอใจด้านกิจกรรมต่างๆภายในงาน'}
                             ,{'section':'ส่วนที่ 2  ความคิดเห็นเกี่ยวกับการแสดงความพึงพอใจในการจัดงานเทศกาลโคนมแห่งชาติ ประจำปี 2561','section':'ความพึงพอใจด้านสถานที่'}
@@ -936,6 +1011,8 @@ console.log($scope.currentUser);
     $scope.TotalDoQuestion = [0,0,0,0,0];
 
     $scope.AllowNextButton = false;
+
+    $scope.QuestionNo = 1;
 });
 
 app.controller('EvaluateSuccessController',function($scope, $routeParams){
@@ -962,7 +1039,8 @@ app.controller('SearchIDCardController',function($scope, $routeParams, HTTPServi
     $scope.imgname = $routeParams.imgname;
 
     $scope.checkIDCard = function(idCard){
-        HTTPService.clientRequest('findWithIDCard', {'IDCard' : idCard}).then(function(result){
+        HTTPService.clientRequest('findRegisteredWithIDCard', {'IDCard' : idCard}).then(function(result){
+
             if(result.data.STATUS == 'OK'){
                 window.location.replace('#/smartcard-register/' + result.data.DATA.UserDataEncode + '/nonidcard');
                 // $scope.QuestionList = result.data.DATA;

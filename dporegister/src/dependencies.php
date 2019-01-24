@@ -69,3 +69,7 @@ $container['SMSController'] = function ($c) {
 $container['ReportController'] = function ($c) {
     return new \App\Controller\ReportController($c->get('logger'), $c->get('db'));
 };
+
+$container['QuestionController'] = function ($c) {
+    return new \App\Controller\QuestionController($c->get('logger'), $c->get('db'));
+};

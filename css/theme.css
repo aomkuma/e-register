@@ -22,6 +22,7 @@ a {
 	background-color: #FFF;
     overflow-x: hidden;
     overflow-y: hidden;
+    width: 100%;
 }
 
 .required_field {

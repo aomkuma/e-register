@@ -14,7 +14,36 @@
             return Attendee::where('IDCard', $username)->where('Password',$password)->first();      
         }
 
+        
+        public static function findRegisteredWithIDCard($username , $password){
+            $years = date('Y');
+            return Attendee::select("attendee.*"
+                        , DB::raw("tbl_province.PROVINCE_ID AS ProvinceID")
+                        , DB::raw("tbl_amphur.AMPHUR_ID AS SubProvinceID")
+                        , DB::raw("tbl_district.DISTRICT_ID AS DistrictID")
+                        , 'register_log.EvaluateType'
+                        , 'register_log.Evaluate'
+                        , 'register_log.Rewards'
+                        , 'register_log.RewardType'
+                        , 'register_log.RewardDate'
+                        , 'register_log.RegisterType'
+                        )
+                        ->leftJoin("province", "province.PROVINCE_NAME", '=', 'attendee.Province')
+                        ->leftJoin("amphur", "amphur.AMPHUR_NAME", '=', 'attendee.SubProvince')
+                        ->leftJoin("district", "district.DISTRICT_NAME", '=', 'attendee.District')
+                        ->join('register_log', 'register_log.user_id', '=' , 'attendee.UserID')
+                        ->where(function($query) use ($username){
+                            if(!empty($username)){
+                                $query->where('IDCard', $username);
+                                $query->orWhere('Mobile', $username);
+                            }
+                        })
+                        ->where('register_log.years', $years)
+                        ->first();      
+        }
+
         public static function findWithIDCard($username , $password){
+            
             return Attendee::select("attendee.*"
                         , DB::raw("tbl_province.PROVINCE_ID AS ProvinceID")
                         , DB::raw("tbl_amphur.AMPHUR_ID AS SubProvinceID")
@@ -23,8 +52,12 @@
                         ->leftJoin("province", "province.PROVINCE_NAME", '=', 'attendee.Province')
                         ->leftJoin("amphur", "amphur.AMPHUR_NAME", '=', 'attendee.SubProvince')
                         ->leftJoin("district", "district.DISTRICT_NAME", '=', 'attendee.District')
-                        ->where('IDCard', $username)
-                        ->orWhere('Mobile', $username)
+                        ->where(function($query) use ($username){
+                            if(!empty($username)){
+                                $query->where('IDCard', $username);
+                                $query->orWhere('Mobile', $username);
+                            }
+                        })
                         ->first();      
         }
 

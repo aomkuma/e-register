@@ -1,0 +1,135 @@
+<div ng-include src="'html/top_menu_admin.html'"></div>
+<div class="row form-group scrollable-default" style=" padding-bottom: 10vh;" >
+	<div class="col-md-12 col-xs-12">
+		<div class="row form-group">
+			<div class="col-lg-12">
+				<button class="btn btn-default" ng-click="backPage()"><span class="glyphicon glyphicon-arrow-left"></span> กลับหน้าหลัก</button>
+			</div>
+		</div>
+		<div class="page-header text-center"><h3>จัดการชุดคำถาม ปี {{QuestionYear.years}} <br>หมวดหมู่ {{QuestionSection.section}}</h3></div>
+
+		<div ng-show="PAGE == 'UPDATE-SECTION'">
+			<div class="row form-group">
+				<label class="col-lg-1 form-control-static">
+					ปี
+				</label>
+				<div class="col-lg-3">
+					<select class="form-control" ng-model="Data.years" ng-options="data.yearValue as data.yearValue for data in YearList" ng-change="checkDuplicateData(Data.years)">
+						<option value="">กรุณาเลือก..</option>
+					</select>
+					<span style="color: red;">{{ShowALert}}</span>
+				</div>
+			</div>
+			<div class="row form-group">
+				<div class="col-lg-12 text-center">
+					<button class="btn btn-default" ng-click="cancelUpdate('MAIN')"><span class="glyphicon glyphicon-arrow-left"></span> กลับหน้าหลัก</button>
+					<button class="btn btn-primary" ng-click="saveData(Data)" ng-disabled="(Data.years == null || Data.years == '') ||  ShowALert != ''"><span class="glyphicon glyphicon-plus"></span> บันทึก</button>
+				</div>
+			</div>
+		</div>
+		<div ng-show="PAGE == 'MAIN'">
+			<div  ng-repeat="data in DataList" ng-init="question_index = $index" style="padding-bottom: 20px;">
+				<div class="row form-group">
+					<label class="col-lg-1">
+						<button class="btn btn-danger" ng-click="deleteQuestion(data.QuestionID, $index)"><span class="glyphicon glyphicon-trash"></span></button>
+					</label>
+					<label class="col-lg-1">
+						คำถามที่ {{$index + 1}}
+					</label>
+					<div class="col-lg-10">
+						<input class="form-control" ng-model="data.Questions">
+					</div>
+				</div>
+
+				<div class="row form-group">
+					<label class="col-lg-1 col-lg-offset-1">
+						รูปแบบคำตอบ
+					</label>
+					<div class="col-lg-10">
+						<div class="btn-group">
+							<label class="btn btn-default btn-checkbox" ng-model="data.QuestionType" uib-btn-radio="'ONCE'" >1 คำตอบ</label>
+				            <label class="btn btn-default btn-checkbox" ng-model="data.QuestionType" uib-btn-radio="'MANY'" >สามารถเลือกได้มากกว่า 1 คำตอบ</label>
+				        </div>
+					</div>
+				</div>
+
+				<div class="row form-group">
+					<label class="col-lg-1 col-lg-offset-1">
+						พื้นหลังคำถาม
+					</label>
+					<div class="col-lg-10">
+						<div class="col-lg-4" >
+							<p class="input-group">
+					          <input type="text" readonly="true" class="form-control" ng-model="data.AttachFile.name" placeholder="เลือกไฟล์" />
+					          <span class="input-group-btn">
+					            <button class="btn btn-default" ngf-select ng-model="data.AttachFile" ngf-max-size="5MB"  ngf-model-invalid="data.AttachFile.invalidFile" accept="image/*" ngf-pattern="'.png,.jpg'" style="height: 33px;">เลือก</button>
+					          </span>
+					        </p>
+						</div>
+						<div class="col-lg-3">
+							{{data.background_img}}
+							<div class="file-alert" ng-show="data.attachFile.invalidFile.$error === 'maxSize'">ขนาดไฟล์ต้องไม่เกิน : {{data.AttachFile.invalidFile.$errorParam}}</div>
+							
+						</div>
+					</div>
+				</div>
+
+				<div class="row form-group" ng-show="data.QuestionType == 'ONCE'">
+					<div class="col-lg-10 col-lg-offset-1">
+						<button class="btn btn-primary" ng-click="chooseIcon(question_index)"><span class="glyphicon glyphicon-info-sign"></span> ใช้คำตอบจากชุด icon</button>
+					</div>
+				</div>
+
+				<div class="row form-group" ng-repeat="choice in data.choice_list" ng-init="choice_index = $index">
+					<div class="col-lg-10 col-lg-offset-1">
+						<div class="row form-group">
+							<label class="col-lg-2">
+								คำตอบที่ {{choice_index + 1}}
+							</label>
+							<div class="col-lg-3">
+								<input class="form-control" ng-model="choice.ChoiceDesc" ng-show="choice.ImgPath == '' || choice.ImgPath == null">
+								<img src="img/{{choice.ImgPath}}" style="height: 5em; width: auto;" ng-show="choice.ImgPath != '' && choice.ImgPath != null">
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row form-group">
+					<div class="col-lg-10 col-lg-offset-1">
+						<button class="btn btn-info" ng-click="addChoice(data)"><span class="glyphicon glyphicon-plus"></span> เพิ่มคำตอบ</button>
+					</div>
+				</div>
+				<hr>
+			</div>
+			<div class="row form-group">
+				<div class="col-lg-12">
+					<button class="btn btn-warning" ng-click="addQuestion()"><span class="glyphicon glyphicon-plus"></span> เพิ่มคำถาม</button>
+				</div>
+			</div>
+			<div class="row form-group">
+				<div class="col-lg-12 text-center">
+					<button class="btn btn-primary" ng-click="saveData(DataList)"><span class="glyphicon glyphicon-plus"></span> บันทึก</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+</div>
+<script type="text/ng-template" id="icon.html">
+	<div class="modal-header">
+		<h3 class="modal-title">ชุด Icon</h3>
+	</div>
+	<div class="modal-body">
+		<div  class="obj_center" bind-html-compile="alertMessage"></div>
+		<br>
+		<div class="row form-group" ng-repeat="data in ChoiceIconList">
+			<div class="col-lg-10 col-lg-offset-1">
+				<input id="{{$index}}" type="radio" ng-model="ChoiceSelected.id" value="{{data.id}}"> <label for="{{$index}}"> {{data.icon_name}}</label>
+			</div>
+		</div>
+
+	</div>
+	<div class="modal-footer">
+	<button class="btn btn-default" ng-click="ok(ChoiceSelected)">OK</button>
+	<button class="btn btn-default" ng-click="cancel()">Cancel</button>
+	</div>
+</script>

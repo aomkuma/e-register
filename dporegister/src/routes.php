@@ -7,6 +7,8 @@ use \Psr\Http\Message\ResponseInterface as Response;
 //$app->get('/user/{id}', 'UserController:getUser');
 $app->post('/login/', 'LoginController:authenticate');
 $app->post('/findWithIDCard/', 'LoginController:findWithIDCard');
+$app->post('/findRegisteredWithIDCard/', 'LoginController:findRegisteredWithIDCard');
+
 $app->post('/loginAdmin/', 'LoginController:authenticateAdmin');
 $app->post('/register/', 'LoginController:register');
 $app->post('/registration/', 'LoginController:registration');
@@ -21,6 +23,19 @@ $app->post('/sendEvaluate/', 'EvaluateController:sendEvaluate');
 $app->post('/saveAdmin/', 'LoginController:saveAdmin');
 $app->post('/exportExcel/', 'ReportController:exportExcel');
 $app->post('/loadSummary/', 'ReportController:loadSummary');
+$app->post('/question/year/list/', 'QuestionController:getQuestionYearList');
+$app->post('/question/year/update/', 'QuestionController:updateQuestionYear');
+$app->post('/question/year/get/', 'QuestionController:getQuestionYear');
+$app->post('/question/detail/list/', 'QuestionController:getQuestionDetailList');
+$app->post('/question/section/update/', 'QuestionController:updateQuestionSection');
+$app->post('/question/section/get/', 'QuestionController:getQuestionSection');
+$app->post('/question/data/list/', 'QuestionController:getQuestionDataList');
+$app->post('/question/data/update/', 'QuestionController:updateQuestionData');
+$app->post('/question/icon/list/', 'QuestionController:getChoiceIconList');
+$app->post('/question/icon/update/', 'QuestionController:updateIcon');
+$app->post('/question/icon/delete/', 'QuestionController:deleteIconDetail');
+$app->post('/question/data/delete/', 'QuestionController:deleteQuestionData');
+
 // $app->post('/checkIDCardProfile/', 'LoginController:checkIDCardProfile');
 
 

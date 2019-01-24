@@ -1,51 +1,71 @@
 <div ng-include src="'html/top_menu.html'"></div>
 <div ng-form name="evaluate_frm">
-	<div class="page-header text-center"><h1><b>แบบสอบถามการจัดงานเทศกาลโคนมแห่งชาติ ประจำปี 2561</b>
+	<div class="page-header text-center"><h1><b>แบบสอบถามการจัดงานเทศกาลโคนมแห่งชาติ ประจำปี 2562</b>
 	</h1></div>
 	<div class="row">
 		<div class="col-lg-6">
-			<h2><u>{{QuestionTypeList[ShowSection-1].section}}</u></h2>
-			<h2>{{QuestionTypeList[ShowSection-1].sub_section}}</h2>
+			<h2><u>{{QuestionTypeList[ShowSection].section}}</u></h2>
 		</div>
 	</div>
-	<div class="row form-group" ng-repeat="question in QuestionList | filter:{'QuestionsSection':ShowSection}" style="font-size: 1.5em;">
-		<div class="col-lg-12">
+	<div class="row form-group" ng-repeat="question in QuestionList" style="font-size: 1.5em;" ng-show="QuestionNo == ($index + 1)"><!--| filter:{'QuestionsSection':ShowSection}-->
+		<div class="col-lg-12" >
 			<div class="row">
 				<div class="col-lg-12">
 					<label>{{($index + 1)}} ) {{question.Questions}}</label>
 				</div>
 			</div>
 			<div class="row" ng-show="question.QuestionType == 'ONCE'">
-				<div ng-class="{'col-lg-3':question.QuestionsSection == '1', 'col-lg-2':question.QuestionsSection >= '2'}" ng-repeat="choice in question.choice_list">
+				<!--<div ng-class="{'col-lg-3':question.QuestionsSection == '1', 'col-lg-2':question.QuestionsSection >= '2'}" ng-repeat="choice in question.choice_list">
 					<label for="answer{{choice.ChoiceID}}" class=" label_input_img">
 						<input type="radio" id="answer{{choice.ChoiceID}}" name="answer{{question.QuestionID}}" ng-model="choice.answer" value="{{choice.ChoiceDesc}}" ng-click="checkValue(choice.answer,choice)" ng-show="question.QuestionsSection == '1'">  &nbsp;
-						<!--<img src="img/excellent.png" ng-show="choice.ChoiceOrder == '1'">
-						<img src="img/good.png" ng-show="choice.ChoiceOrder == '2'">
-						<img src="img/little.png" ng-show="choice.ChoiceOrder == '3'">
-						<img src="img/bad.png" ng-show="choice.ChoiceOrder == '4'">
-						<img src="img/nocomment.png" ng-show="choice.ChoiceOrder == '5'">-->
 						<img src="img/{{choice.ChoiceOrder}}.png" style="height: 5em; width: auto;" ng-show="question.QuestionsSection >= '2'">
 						<span ng-bind-html="choice.ChoiceDesc" ng-show="question.QuestionsSection == '1'"></span>
 					</label>
 				</div>
+				<!-- {{DoQuestions[$index]}} -->
+				<div class="col-lg-3" ng-repeat="choice in question.choice_list">
+					<label for="answer{{choice.ChoiceID}}" class=" label_input_img">
+						<input type="radio" id="answer{{choice.ChoiceID}}" name="answer{{question.QuestionID}}" ng-model="choice.answer" value="{{choice.ChoiceDesc}}" ng-click="checkValue(choice.answer,choice)" ng-show="(choice.ImgPath == null || choice.ImgPath == '')">  &nbsp;
+						<img src="img/{{choice.ImgPath}}" style="height: 5em; width: auto;" ng-show="choice.ImgPath != null && choice.img_path != ''">
+						<span ng-bind-html="choice.ChoiceDesc" ng-show="(choice.ChoiceDesc != null && choice.ChoiceDesc != '') && (choice.ImgPath == null || choice.ImgPath == '')"></span>
+					</label>
+				</div>
 			</div>
 			<div class="row" ng-show="question.QuestionType == 'MANY'">
-				<div class="col-lg-3" ng-repeat="choice in question.choice_list">
+				<div class="col-lg-4 col-md-4" ng-repeat="choice in question.choice_list">
 					<label><input type="checkbox" ng-model="choice.answer" ng-true-value="'{{choice.ChoiceDesc}}'" ng-false-value="''" ng-click="checkManyValue(choice.answer,choice)"> &nbsp;{{choice.ChoiceDesc}}</label>
+					
 				</div>
 			</div>
 			<hr style="width: 70%;">
+			<div class="row">
+				<div class="col-lg-12 text-center">
+					<button class="btn btn-default" ng-click="prevQuestion()" ng-show="QuestionNo > 1"> ย้อนกลับ</button>
+					<button class="btn btn-success" ng-click="nextQuestion()" ng-show="QuestionNo < QuestionList.length" ng-disabled="DoQuestions[$index] == undefined"> ถัดไป</button>
+					<button class="btn btn-success" style="font-size: 1em;" ng-click="finish()" ng-disabled="QuestionList.length != DoQuestions.length" ng-show="QuestionList.length == (QuestionNo)"> ส่งแบบสอบถาม <span class="glyphicon glyphicon-ok"></span></button>
+				</div>
+			</div>
 		</div>
 	</div>
-	<div class="row">
+	<div class="row form-group">
+		<div class="col-lg-10 col-lg-offset-1">
+			<span class="pull-right"> &nbsp; {{TotalPercent}} / 100%</span>
+			<div class="progress">
+			  <div class="progress-bar bg-success" role="progressbar" style="width: {{TotalPercent}}%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+			</div>
+		</div>
+	</div>
+	<!--
+	<div class="row" ng-show="false">
 		<div class="col-lg-4 col-lg-offset-4 col-xs-4 col-xs-offset-4 text-center">
 			<div class="page-header">
 				<button class="btn btn-default" style="font-size: 1em;" ng-click="backStep()" ng-show="ShowSection > 1"><span class="glyphicon glyphicon-arrow-left"></span> ย้อนกลับ </button>
 				<button class="btn btn-primary" style="font-size: 1em;" ng-click="nextStep()" ng-disabled="!AllowNextButton" ng-show="ShowSection <  QuestionTypeList.length" > ถัดไป <span class="glyphicon glyphicon-arrow-right"></span></button>
-				<button class="btn btn-success" style="font-size: 1em;" ng-click="finish()" ng-disabled="!AllowNextButton" ng-show="ShowSection ==  QuestionTypeList.length"> ส่งแบบสอบถาม <span class="glyphicon glyphicon-ok"></span></button>
+				<button class="btn btn-success" style="font-size: 1em;" ng-click="finish()" ng-disabled="QuestionList.length != DoQuestions.length" ng-show="ShowSection ==  QuestionTypeList.length"> ส่งแบบสอบถาม <span class="glyphicon glyphicon-ok"></span></button>
 			</div>
 		</div>
 	</div>
+	-->
 </div>
 <style type="text/css" media="screen">
 
@@ -63,4 +83,13 @@ label > input:checked + img{ /* (RADIO CHECKED) IMAGE STYLES */
   border:2px solid #f00;
   border-radius:100%;
 }	
+.container{
+	background-color: transparent;
+}
+body{
+	background-image: url('img/{{BG_IMG}}');
+	width: 100%; height: 100%;
+	background-position: center; background-size: 100% 100%; 
+	/*background-color: #ccc;*/
+}
 </style>

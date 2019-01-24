@@ -22,8 +22,23 @@
     // ini_set('display_errors','On');
 
             try{
-               	$DataList = EvaluateService::getQuestions();
-                $this->data_result['DATA'] = $DataList;
+                $years = date('Y') + 543;
+
+                $QuestionYear = EvaluateService::getQuestionYear($years);
+               	
+                // Get section by year
+                $QuestionSection = EvaluateService::getQuestionSection($QuestionYear['id']);
+                $_List = [];
+                foreach ($QuestionSection as $key => $value) {
+                    $DataList = EvaluateService::getQuestions($QuestionYear['id'], $value['id']);
+                    foreach ($DataList as $_key => $_value) {
+                        array_push($_List, $_value);
+                    }
+                    
+                }
+
+                $this->data_result['DATA']['Questions'] = $_List;
+                $this->data_result['DATA']['QuestionSection'] = $QuestionSection;
 
                 return $this->returnResponse(200, $this->data_result, $response, false);
                 

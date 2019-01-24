@@ -25,6 +25,7 @@ return [
             'password' => '',
             'charset' => 'utf8',
             'prefix'    => 'tbl_',
+            'port' => '3306'
         ],
         'sms' => [
             'from' => $SMS_FROM,
