@@ -55,6 +55,7 @@
             try{
                 $obj = $request->getParsedBody();
                 $DoQuestions = $obj['obj']['DoQuestions'];
+                $Suggestion = trim($obj['obj']['Suggestion']);
                 // print_r($obj);exit;
                 $UserID = $obj['obj']['UserID'];
                 $ResponseType = $obj['obj']['ResponseType'];
@@ -64,14 +65,25 @@
                 }
                 
                 // Update Evaluate Status
-                EvaluateService::updateAttendeeEvaluateStatus($UserID);
+                $register_log_id = EvaluateService::updateAttendeeEvaluateStatus($UserID);
+
+                if(!empty($Suggestion)){
+
+                    $SuggestionData = [];
+                    $SuggestionData['user_id'] = $UserID;                
+                    $SuggestionData['years'] = (date('Y') + 543);                
+                    $SuggestionData['suggestion'] = $Suggestion;                
+                    EvaluateService::addSuggestion($SuggestionData);
+
+                }
+
                 $attendee = EvaluateService::getAttendee($UserID);
                 // print_r($attendee);
 
                 if(!empty(trim($attendee['IDCard']))){
                     // echo $attendee['IDCard'];
                 // exit;
-                    $Wifi = EvaluateService::getWifi($UserID);
+                    $Wifi = EvaluateService::getWifi($UserID, $register_log_id);
                     
                     if($res){
                         // send wifi

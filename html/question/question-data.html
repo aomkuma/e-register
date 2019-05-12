@@ -74,6 +74,22 @@
 					</div>
 				</div>
 
+				<div class="row form-group">
+					<label class="col-lg-1">
+						ชุดคำตอบอ้างอิง
+					</label>
+					<div class="col-lg-3">
+						<select class="form-control" ng-model="data.ParentQuestion" ng-options="q.QuestionID as q.Questions for q in QuestionDataList" ng-change="changeQuestionChoice(data.ParentQuestion, question_index)">
+							<option value="">เลือกคำถาม</option>
+						</select>
+					</div>
+					<div class="col-lg-3">
+						<select class="form-control" ng-model="data.ParentChoice" ng-options="c.ChoiceDesc as c.ChoiceDesc for c in data.ChoiceList">
+							<option value="">เลือกคำตอบ</option>
+						</select>
+					</div>
+				</div>
+
 				<div class="row form-group" ng-show="data.QuestionType == 'ONCE'">
 					<div class="col-lg-10 col-lg-offset-1">
 						<button class="btn btn-primary" ng-click="chooseIcon(question_index)"><span class="glyphicon glyphicon-info-sign"></span> ใช้คำตอบจากชุด icon</button>

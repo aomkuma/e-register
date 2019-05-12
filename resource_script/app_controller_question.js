@@ -478,6 +478,7 @@ app.controller('QuestionDataController', function($scope, $uibModal, $location, 
         HTTPService.clientRequest('question/year/get', params).then(function (result) {
             if(result.data.STATUS == 'OK'){
                 $scope.QuestionYear =  result.data.DATA;
+                $scope.loadAllQuestion();
             }
         });
     
@@ -488,12 +489,25 @@ app.controller('QuestionDataController', function($scope, $uibModal, $location, 
         var params = {'question_section_id':$scope.question_section_id};
         HTTPService.clientRequest('question/data/list', params).then(function (result) {
             if(result.data.STATUS == 'OK'){
-                $scope.tableLoad = false;
                 $scope.DataList = result.data.DATA.List;
-                
+
+                for(var i = 0; i < $scope.DataList.length; i++){
+                    $scope.changeQuestionChoice($scope.DataList[i].ParentQuestion, i);
+                }
             }
         });
     
+    }
+
+    $scope.loadAllQuestion = function(){
+        
+        var params = {'question_year_id':$scope.QuestionSection.question_year_id};
+        HTTPService.clientRequest('question/data/list', params).then(function (result) {
+            if(result.data.STATUS == 'OK'){
+                $scope.QuestionDataList = result.data.DATA.List;
+                $scope.loadData($scope.condition);
+            }
+        });
     }
 
     $scope.saveData = function(Data){
@@ -548,8 +562,11 @@ app.controller('QuestionDataController', function($scope, $uibModal, $location, 
             ,'QuestionNo':($scope.DataList.length + 1)
             ,'QuestionType':'ONCE'
             ,'background_img':''
+            ,'ParentQuestion':null
+            ,'ParentChoice':null
             ,'actives':'Y'
             ,'choice_list':[]
+            ,'ChoiceList':[]
         });
     }
 
@@ -677,8 +694,25 @@ app.controller('QuestionDataController', function($scope, $uibModal, $location, 
         }
     }
 
+    $scope.changeQuestionChoice = function(QuestionID, question_index){
+        for(var i = 0; i < $scope.QuestionDataList.length; i++){
+            if(QuestionID != null){
+                
+                if(QuestionID == $scope.QuestionDataList[i].QuestionID){
+                    // $scope.DataList[question_index].forEach(function(element) { 
+                        // element.ChoiceList = $scope.QuestionDataList[i].choice_list; 
+                    // });
+                    console.log(QuestionID , $scope.QuestionDataList[i].QuestionID);
+                    $scope.DataList[question_index]['ChoiceList'] = $scope.QuestionDataList[i].choice_list;
+                    console.log($scope.DataList[question_index]);
+                }
+            }
+        }
+    }
+
     $scope.PAGE = 'MAIN';
     $scope.loadDataSection();
-    $scope.loadData($scope.condition);
+    
+    
 
 });

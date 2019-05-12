@@ -33,7 +33,7 @@
                         ->join("register_log", 'register_log.user_id', '=', 'attendee.UserID')
                         ->count();
             
-            $DataList = Attendee::select("attendee.*"
+            $DataList = RegisterLog::select("attendee.*"
                             ,"register_log.id"
                             ,"register_log.years"
                             ,"register_log.register_date"
@@ -62,10 +62,11 @@
                                 $query->where('register_log.years', $years);
                             }  
                         })
-                        ->join("register_log", 'register_log.user_id', '=', 'attendee.UserID')
+                        ->join("attendee", 'register_log.user_id', '=', 'attendee.UserID')
                         ->with('wifi')
                         ->skip($skip)
                         ->take($limit)
+                        ->orderBy('register_log', 'DESC')
                         ->orderBy('UserID', 'DESC')
                         ->get();
 

@@ -10,6 +10,7 @@
     use App\Model\Attendee;
     use App\Model\Wifi;
     use App\Model\RegisterLog;
+    use App\Model\Suggestion;
 
     use Illuminate\Database\Capsule\Manager as DB;
     
@@ -54,13 +55,15 @@
             $years = date('Y');
             $model = RegisterLog::where('user_id', $UserID)->where('years', $years)->first();
             $model->Evaluate = 'Y';
-            return $model->save();
+            $model->save();
+            return $model->id;
         }
 
-        public static function getWifi($UserID){
+        public static function getWifi($UserID, $RegisterLogID){
             $model = Wifi::where('InUse', 'N')->first();
             $model->InUse = 'Y';
             $model->UserID = $UserID;
+            $model->RegisterLogID = $RegisterLogID;
             $model->save();
             return $model;
         }
@@ -69,6 +72,11 @@
 
             $model = Attendee::find($UserID);
             return $model;
+        }
+
+        public static function addSuggestion($obj){
+            $model = Suggestion::create($obj);
+            return $model->id;
         }
 
     }

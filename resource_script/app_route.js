@@ -1,10 +1,10 @@
 app.config(function($routeProvider) {
     $routeProvider
     .when("/", {
-        // templateUrl : "home.html",
-        // controller : "IntroController"
-        templateUrl : "pre-register.html",
-        controller : "PreRegisterController"
+        templateUrl : "home.html",
+        controller : "IntroController"
+        // templateUrl : "pre-register.html",
+        // controller : "PreRegisterController"
     })
 
     .when("/icon-list", {

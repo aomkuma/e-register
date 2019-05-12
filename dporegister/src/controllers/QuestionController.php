@@ -52,8 +52,9 @@
             try{
                 $obj = $request->getParsedBody();
                 $question_section_id = $obj['obj']['question_section_id'];
+                $question_year_id = $obj['obj']['question_year_id'];
 
-                $DataList = QuestionService::getQuestionDataList($question_section_id);
+                $DataList = QuestionService::getQuestionDataList($question_section_id, $question_year_id);
                 $this->data_result['DATA']['List'] = $DataList;
 
                 return $this->returnResponse(200, $this->data_result, $response, false);
@@ -149,7 +150,7 @@
         }
 
         public function updateQuestionData($request, $response, $args){
-            
+            ini_set('max_input_vars','2000' );
             try{
 
                 $obj = $request->getParsedBody();

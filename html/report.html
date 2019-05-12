@@ -6,11 +6,23 @@
 </div>
 <div class="row">
 	<div class="col-lg-6 col-lg-offset-3 text-center">
-		ทำแบบสอบถามทั้งสิน {{CountEvaluate}} คน
+		ทำแบบสอบถามทั้งสิ้น {{CountEvaluate}} คน
 	</div>
 </div>
 <div class="row">
+	<label class="form-control-static col-lg-1 col-lg-offset-5">
+		ปีแบบสอบถาม
+	</label>
+	<div class="col-lg-1 text-center">
+		<select class="form-control" ng-model="condition.years" ng-options="data.yearValue as data.yearValue for data in YearList">
+			
+		</select>
+	</div>
+
+</div>
+
+<div class="row">
 	<div class="col-lg-6 col-lg-offset-3 text-center">
-		<button class="btn btn-primary" ng-click="exportExcel()">รายงานสรุปแบบประเมิน</button>
+		<button class="btn btn-primary" ng-click="exportExcel(condition)">รายงานสรุปแบบประเมิน</button>
 	</div>
 </div>

@@ -13,6 +13,8 @@ class Question extends \Illuminate\Database\Eloquent\Model {
   								, 'QuestionType'
   								, 'DisplayType'
   								, 'background_img'
+                  , 'ParentQuestion'
+                  , 'ParentChoice'
   								, 'actives'
   							);
 

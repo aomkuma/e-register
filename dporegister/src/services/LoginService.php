@@ -182,6 +182,7 @@
             
             $model->user_id = $obj['user_id'];
             $model->years = $obj['years'];
+            $model->RegisterType = $obj['RegisterType'];
             $model->register_date = $obj['register_date'];
             $model->save();
 

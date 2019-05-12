@@ -3,18 +3,30 @@
 
 	use App\Model\Attendee;
     use App\Model\Question;
+    use App\Model\QuestionSection;
+    use App\Model\QuestionsYear;
     use App\Model\QuestionResponse;
+    use App\Model\RegisterLog;
+    use App\Model\Suggestion;
 
 	use Illuminate\Database\Capsule\Manager as DB;
 
 	class ReportService {
 
-        public static function CountRegister(){
-            return Attendee::count();
+        public static function getSuggestionList($years){
+            return Suggestion::where('years', $years)
+                        ->orderBy('id','ASC')
+                        ->get();
         }
 
-        public static function CountRegisterByType(){
-            return DB::table("attendee")
+        public static function CountRegister($years){
+            return RegisterLog::where('years', $years)
+                        ->count();
+        }
+
+        public static function CountRegisterByType($years){
+            return DB::table("register_log")
+                    ->where('years', $years)
                     ->select(DB::raw("RegisterType"), DB::raw("COUNT(*) as count_row"))
                     ->orderBy("RegisterType", 'DESC')
                     ->groupBy(DB::raw("RegisterType"))
@@ -36,11 +48,12 @@
 
         public static function CountEvaluate(){
             // return Attendee::where("Evaluate", 'Y')->count();
-            echo  DB::table("question_response")
-                    ->select(DB::raw("COUNT(*) as count_row"))
-                    ->where('ResponseDate', '>=', '2018-01-30')
+            return  DB::table("question_response")
+                    // ->select(DB::raw("COUNT(*) as count_row"))
+                    ->select('*')
+                    ->whereBetween('ResponseDate', ['2019-01-30 00:00:00', '2019-02-05 23:59:59'])
                     ->groupBy('UserID')
-                    ->toSql();
+                    ->get();
         }
 
         public static function CountEvaluateByType($responseType){
@@ -52,13 +65,13 @@
                     ->get();*/
             return DB::table("question_response")
                     ->select(DB::raw("COUNT(*) as count_row"))
-                    ->where('ResponseDate', '>=', '2018-01-30')
+                    ->whereBetween('ResponseDate', ['2019-01-30 00:00:00', '2019-02-05 23:59:59'])
                     ->where('ResponseType', $responseType)
                     ->groupBy('UserID')
                     ->get();
         }
 
-        public static function CountEvaluateBySystem($responseType){
+        public static function CountEvaluateBySystem($years, $responseType){
             /*return DB::table("attendee")
                     ->select(DB::raw("RegisterType"), DB::raw("COUNT(*) as count_row"))
                     ->where("Evaluate", 'Y')
@@ -66,16 +79,19 @@
                     ->groupBy(DB::raw("RegisterType"))
                     ->get();*/
             return DB::table("question_response")
-                    ->select(DB::raw("COUNT(*) as count_row"))
-                    ->join("attendee", 'question_response.UserID', '=', 'attendee.UserID')
-                    ->where('ResponseDate', '>=', '2018-01-30')
+                    ->select('*')
+                    ->join("register_log", 'question_response.UserID', '=', 'register_log.user_id')
+                    // ->where('ResponseDate', '>=', '2018-01-30')
+                    ->where('register_log.Evaluate', 'Y')
                     ->where('ResponseType', 'SYSTEM')
                     ->where('RegisterType', 'SYSTEM')
+                    ->where('register_log.years', $years)
+                    ->whereBetween('ResponseDate', ['2019-01-30 00:00:00', '2019-02-05 23:59:59'])
                     ->groupBy('question_response.UserID')
                     ->get();
         }
 
-        public static function CountEvaluateByManual($responseType){
+        public static function CountEvaluateByManual($years, $responseType){
             /*return DB::table("attendee")
                     ->select(DB::raw("RegisterType"), DB::raw("COUNT(*) as count_row"))
                     ->where("Evaluate", 'Y')
@@ -83,11 +99,14 @@
                     ->groupBy(DB::raw("RegisterType"))
                     ->get();*/
             return DB::table("question_response")
-                    ->select(DB::raw("COUNT(*) as count_row"))
-                    ->join("attendee", 'question_response.UserID', '=', 'attendee.UserID')
-                    ->where('ResponseDate', '>=', '2018-01-30')
-                    ->where('ResponseType', 'SYSTEM')
-                    ->where('RegisterType', 'MANUAL')
+                    ->select('*')
+                    ->join("register_log", 'question_response.UserID', '=', 'register_log.user_id')
+                    // ->where('ResponseDate', '>=', '2018-01-30')
+                    ->where('register_log.Evaluate', 'Y')
+                    ->where('register_log.years', $years)
+                    ->where('question_response.ResponseType', 'SYSTEM')
+                    ->where('register_log.RegisterType', 'MANUAL')
+                    ->whereBetween('ResponseDate', ['2019-01-30 00:00:00', '2019-02-05 23:59:59'])
                     ->groupBy('question_response.UserID')
                     ->get();
         }
@@ -101,10 +120,19 @@
                     ->get();*/
             return DB::table("question_response")
                     ->select(DB::raw("COUNT(*) as count_row"))
-                    ->where('ResponseDate', '>=', '2018-01-30')
+                    ->whereBetween('ResponseDate', ['2019-01-30 00:00:00', '2019-02-05 23:59:59'])
                     ->where('ResponseType', 'MANUAL')
                     ->groupBy('UserID')
                     ->get();
+        }
+
+        public static function GetQuestionSection($years){
+            return QuestionSection::select("question_section.*")
+                    ->where('years', $years)
+                    ->join('question_year', 'question_year.id' , '=', 'question_section.question_year_id')
+                    ->orderBy('order_no', 'ASC')
+                    ->get()
+                    ->toArray();
         }
 
         public static function GetQuestion($section){
@@ -114,7 +142,7 @@
                      }])
                     ->orderBy("QuestionsSection", 'ASC')
                     ->orderBy("QuestionNo", 'ASC')
-                    ->get();
+                    ->get()->toArray();
         }
 
 
@@ -130,14 +158,15 @@
                             $query->where('ResponseType', $responseType);
                         }
                     })
-                    ->where('ResponseDate', '>=', '2018-01-30')
+                    ->whereBetween('ResponseDate', ['2019-01-30 00:00:00', '2019-02-05 23:59:59'])
                     ->orderBy("ResponseID", 'ASC')
                     ->groupBy(DB::raw("UserID"))
                     ->get();
         }
 
-        public static function GetQuestionResponseByGender($gender){
-            return Attendee::join("question_response", "question_response.UserID", '=', "attendee.UserID")
+        public static function GetQuestionResponseByGender($gender, $years){
+            return Attendee::join("register_log", "attendee.UserID", '=', "register_log.user_id")
+                    ->join("question_response", "question_response.UserID", '=', "attendee.UserID")
                     ->where(function($query) use($gender){
                         if($gender=='ชาย'){
                             $query->where('Gender' , 'M');
@@ -148,15 +177,17 @@
                             $query->orWhere('Gender', '');
                         }
                     })
-                    ->where('Evaluate', 'Y')
-                    ->where('ResponseDate', '>=', '2018-01-30')
+                    ->where('register_log.Evaluate', 'Y')
+                    ->where('register_log.years', $years)
+                    ->whereBetween('ResponseDate', ['2019-01-30 00:00:00', '2019-02-05 23:59:59'])
                     ->where('ResponseType', '=', 'SYSTEM')
                     ->groupBy("question_response.UserID")
                     ->get();
         }
 
-        public static function GetQuestionResponseByAge($ageRange){
-            return Attendee::join("question_response", "question_response.UserID", '=', "attendee.UserID")
+        public static function GetQuestionResponseByAge($ageRange, $years){
+            return Attendee::join("register_log", "attendee.UserID", '=', "register_log.user_id")
+            ->join("question_response", "question_response.UserID", '=', "attendee.UserID")
             ->where(function($query) use($ageRange){
                         if($ageRange=='ต่ำกว่า 15 ปี'){
     //                         $query->where(DB::raw("YEAR(NOW()) - YEAR(Birthdate)
@@ -179,9 +210,9 @@
                             $query->orWhere('Birthdate', '0000-00-00');
                         }
                     })
-                    ->where('Evaluate', 'Y')
-                    // ->where('Birthdate', '<>', '0000-00-00')
-                    ->where('ResponseDate', '>=', '2018-01-30')
+                    ->where('register_log.Evaluate', 'Y')
+                    ->where('register_log.years', $years)
+                    ->whereBetween('ResponseDate', ['2019-01-30 00:00:00', '2019-02-05 23:59:59'])
                     ->where('ResponseType', '=', 'SYSTEM')
                     ->groupBy("question_response.UserID")
                     ->get();
@@ -194,17 +225,29 @@
                     ->where('QuestionID', $questionID)
                     ->where('Answers', 'LIKE', '%'.$answers.'%')
                     ->where('ResponseType', $responseType)
-                    ->where('ResponseDate', '>=', '2018-01-30')
+                    ->whereBetween('ResponseDate', ['2019-01-30 00:00:00', '2019-02-05 23:59:59'])
                     ->orderBy("ResponseID", 'ASC')
                     ->groupBy(DB::raw("UserID"))
                     ->get();
         }  
 
-        public static function getAttendeeDetail(){
+        public static function getAttendeeDetail($years){
             // return DB::table("attendee")->with('wifi')->get();
-            return Attendee::
-                    with('wifi')
-                    ->orderBy("UserID", 'ASC')
+            return RegisterLog::select("attendee.*"
+                            ,"register_log.id"
+                            ,"register_log.years"
+                            ,"register_log.register_date AS CreateDate"
+                            ,"register_log.EvaluateType"
+                            ,"register_log.Evaluate"
+                            ,"register_log.Rewards"
+                            ,"register_log.RewardType"
+                            ,"register_log.RewardDate"
+                            ,"register_log.RegisterType"
+                        )
+                    ->where('years', $years)
+                    ->join("attendee", 'register_log.user_id', '=', 'attendee.UserID')
+                    ->with('wifi')
+                    ->orderBy("register_log.id", 'ASC')
                     // ->take(100)
                     ->get();
         }      

@@ -1,6 +1,6 @@
 <div ng-include src="'html/top_menu.html'"></div>
 <div ng-form name="evaluate_frm">
-	<div class="page-header text-center"><h1><b>แบบสอบถามการจัดงานเทศกาลโคนมแห่งชาติ ประจำปี 2562</b>
+	<div class="page-header text-center"><h1><b>แบบสอบถามการจัดงานเทศกาล<a href="#/home">โค</a>นมแห่งชาติ ประจำปี 2562</b>
 	</h1></div>
 	<div class="row">
 		<div class="col-lg-6">
@@ -35,6 +35,12 @@
 				<div class="col-lg-4 col-md-4" ng-repeat="choice in question.choice_list">
 					<label><input type="checkbox" ng-model="choice.answer" ng-true-value="'{{choice.ChoiceDesc}}'" ng-false-value="''" ng-click="checkManyValue(choice.answer,choice)"> &nbsp;{{choice.ChoiceDesc}}</label>
 					
+				</div>
+			</div>
+			<div class="row form-group" ng-show="QuestionList.length == (QuestionNo)">
+				<label class="form-control-static col-lg-12">ข้อเสนอแนะ (ถ้ามี)</label>
+				<div class="col-lg-10 col-lg-offset-1">
+					<textarea class="form-control" ng-model="Suggestion.data" rows="5"></textarea>
 				</div>
 			</div>
 			<hr style="width: 70%;">

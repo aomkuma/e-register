@@ -344,6 +344,18 @@ function getYearList(loop)
     return yearList;
 }
 
+function getYearListFromBegin(beginYear, curYear)
+{
+    // var startYear = beginYear;
+    console.log(beginYear, curYear);
+    var loop = curYear - beginYear;
+    var yearList = [];
+    for(var i =0 ; i <= loop; i++){
+        yearList.push({'yearValue': beginYear + i + 543, 'yearText' : beginYear + i});
+    }
+    return yearList;
+}
+
 function getYearOfBirthList(loop)
 {
     var dateObj = new Date();

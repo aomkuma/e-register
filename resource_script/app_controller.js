@@ -849,6 +849,7 @@ app.controller('EvaluateController',function($scope, $routeParams, $filter, HTTP
                 $scope.TotalQuestion = $filter('CountAnswers')($scope.QuestionList, $scope.ShowSection);
                 console.log($scope.QuestionList);
                 $scope.BG_IMG = $scope.QuestionList[0].background_img;
+                $scope.setEmptyUnselectQuestion();
             }else{
                 alert('ไม่สามารถโหลดแบบสอบถามได้ กรุณากดปุ่ม F5 เพื่อโหลดแบบสอบถามอีกครั้ง');
             }
@@ -928,26 +929,71 @@ app.controller('EvaluateController',function($scope, $routeParams, $filter, HTTP
             $scope.AllowNextButton = false;
         }
         $scope.TotalPercent = Math.ceil(($scope.DoQuestions.length / $scope.QuestionList.length) * 100);
-        console.log($scope.TotalPercent);
+        // console.log($scope.DoQuestions);
+
+        // add / remove question if parent question and choice != null
+        var i = 0;
+        while(i < $scope.UnselectQuestion.length){
+            
+            if( answerdata.answer.indexOf($scope.UnselectQuestion[i].QuestionData.ParentChoice) > -1 ){
+                var questionData = angular.copy($scope.UnselectQuestion[i]);
+                console.log(answerdata.answer, (questionData.QuestionData.ParentChoice));
+                $scope.QuestionList.splice(questionData.index, 0, questionData.QuestionData);
+                // setTimeout(function(){
+                $scope.UnselectQuestion.splice(i, 1);    
+                // }, 1000);
+                
+            }else{
+                var j = 0;
+                while(j < $scope.QuestionList.length){
+                    if(($scope.QuestionList[j].ParentQuestion != null && $scope.QuestionList[j].ParentQuestion != '') 
+                        && ($scope.QuestionList[j].ParentChoice != null && $scope.QuestionList[j].ParentChoice != '')
+                        && answerdata.answer.indexOf($scope.QuestionList[j].ParentChoice) == -1){
+
+                        var Data = angular.copy($scope.QuestionList[j]);
+                        $scope.QuestionList.splice(j, 1);
+
+                        $scope.UnselectQuestion.push({'QuestionData' : Data, 'index' : j});
+
+                    }else{
+                        j++;
+                    }
+                }
+            }
+            i++;
+        }
+        $scope.QuestionList.sort(compare);
+        // $scope.setEmptyUnselectQuestion();
+        console.log($scope.QuestionList);
     }
+
+    function compare(a,b) {
+      if (a.QuestionsSection < b.QuestionsSection)
+        return -1;
+      if (a.QuestionsSection > b.QuestionsSection)
+        return 1;
+      return 0;
+    }
+
+
 
     $scope.backStep = function(){
         $scope.ShowSection -= 1;
         $scope.TotalQuestion = $filter('CountAnswers')($scope.QuestionList, $scope.ShowSection);
-        console.log('show sectoin : ' + $scope.ShowSection);
+        // console.log('show sectoin : ' + $scope.ShowSection);
         if($scope.TotalQuestion == $scope.TotalDoQuestion[$scope.ShowSection - 1]){
             $scope.AllowNextButton = true;
         }else{
             $scope.AllowNextButton = false;
         }
         document.body.scrollTop = 0; // For Safari
-    document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+        document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
     }
 
     $scope.nextStep = function(){
         $scope.ShowSection += 1;
         $scope.TotalQuestion = $filter('CountAnswers')($scope.QuestionList, $scope.ShowSection);
-        console.log('show sectoin : ' + $scope.ShowSection);
+        // console.log('show sectoin : ' + $scope.ShowSection);
         if($scope.TotalQuestion == $scope.TotalDoQuestion[$scope.ShowSection - 1]){
             $scope.AllowNextButton = true;
         }else{
@@ -960,7 +1006,9 @@ app.controller('EvaluateController',function($scope, $routeParams, $filter, HTTP
     console.log($scope.currentUser);
     $scope.finish = function(){
 
-        var params = {'DoQuestions':$scope.DoQuestions,'UserID':$scope.currentUser.UserID};
+        var params = {'DoQuestions':$scope.DoQuestions
+                    , 'Suggestion':$scope.Suggestion.data
+                    , 'UserID':$scope.currentUser.UserID};
         HTTPService.clientRequest('sendEvaluate',params).then(function(result){
             if(result.data.STATUS == 'OK'){
                 window.location.replace('#/evaluate-success');
@@ -977,19 +1025,19 @@ app.controller('EvaluateController',function($scope, $routeParams, $filter, HTTP
         // $scope.ShowSection = $scope.QuestionList[$scope.QuestionNo - 1].QuestionsSection;
         $scope.findSectionIndex($scope.QuestionNo - 1);
         $scope.BG_IMG = $scope.QuestionList[$scope.QuestionNo - 1].background_img;
-        console.log($scope.QuestionNo);
+        // console.log($scope.QuestionNo);
     }
     $scope.nextQuestion = function(){
         $scope.QuestionNo++;
         // $scope.ShowSection = $scope.QuestionList[$scope.QuestionNo - 1].QuestionsSection;
         $scope.findSectionIndex($scope.QuestionNo - 1);
         $scope.BG_IMG = $scope.QuestionList[$scope.QuestionNo - 1].background_img;
-        console.log($scope.QuestionNo);
+        // console.log($scope.QuestionNo);
     }
 
     $scope.findSectionIndex = function(questionNo){
         for(var i = 0; i < $scope.QuestionTypeList.length; i++){
-            console.log($scope.QuestionTypeList[i].id.toString() , $scope.QuestionList[questionNo].QuestionsSection);
+            // console.log($scope.QuestionTypeList[i].id.toString() , $scope.QuestionList[questionNo].QuestionsSection);
             if($scope.QuestionTypeList[i].id.toString() == $scope.QuestionList[questionNo].QuestionsSection){
                 $scope.ShowSection = i;
                 break;
@@ -997,6 +1045,25 @@ app.controller('EvaluateController',function($scope, $routeParams, $filter, HTTP
         }
     }
 
+    $scope.setEmptyUnselectQuestion = function(){
+        for(var i = 0; i < $scope.QuestionList.length; i++){
+            if(($scope.QuestionList[i].ParentQuestion != null && $scope.QuestionList[i].ParentQuestion != '') && ($scope.QuestionList[i].ParentChoice != null && $scope.QuestionList[i].ParentChoice != '')){
+                $scope.UnselectQuestion.push({'QuestionData' : $scope.QuestionList[i], 'index' : i});
+            }
+        }
+        var i = 0;
+        while(i < $scope.QuestionList.length){
+            if(($scope.QuestionList[i].ParentQuestion != null && $scope.QuestionList[i].ParentQuestion != '') && ($scope.QuestionList[i].ParentChoice != null && $scope.QuestionList[i].ParentChoice != '')){
+                $scope.QuestionList.splice(i, 1);
+            }else{
+                i++;
+            }
+        }
+        console.log($scope.UnselectQuestion);
+        console.log($scope.QuestionList);
+    }
+
+    $scope.UnselectQuestion = [];
     $scope.BG_IMG = '';
     $scope.TotalPercent = 0;
     $scope.ShowSection = 0;
@@ -1007,7 +1074,7 @@ app.controller('EvaluateController',function($scope, $routeParams, $filter, HTTP
                             ,{'section':'ส่วนที่ 2  ความคิดเห็นเกี่ยวกับการแสดงความพึงพอใจในการจัดงานเทศกาลโคนมแห่งชาติ ประจำปี 2561','section':'ภาพรวมของการจัดงาน'}];
     $scope.getQuestions();
     $scope.DoQuestions = [];
-    
+    $scope.Suggestion = {'data' : ''};
     $scope.TotalDoQuestion = [0,0,0,0,0];
 
     $scope.AllowNextButton = false;
@@ -1350,21 +1417,27 @@ app.controller('ReportController',function($scope, $routeParams, HTTPService, In
         return false;
     }
 
-    $scope.exportExcel = function(){
+    $scope.exportExcel = function(condition){
         IndexOverlayFactory.overlayShow();
-        HTTPService.clientRequest('exportExcel', {}).then(function(result){
-            if(result.data.STATUS == 'OK'){
-                window.location.href="downloads/" + result.data.DATA;
-            }else{
-                alert('ไม่สามารถออกรายงานได้');
-            }
-            IndexOverlayFactory.overlayHide();
-        });
+        if((condition.years - 543) != curYear){
+            // alert(curYear);
+            window.location.href="downloads/archeive_file/dairyfair_report_" + condition.years + '.xlsx';
+        }else{
+            
+            HTTPService.clientRequest('exportExcel', {'condition' : condition}).then(function(result){
+                if(result.data.STATUS == 'OK'){
+                    window.location.href="downloads/" + result.data.DATA;
+                }else{
+                    alert('ไม่สามารถออกรายงานได้');
+                }
+                IndexOverlayFactory.overlayHide();
+            });
+        }
     }
 
-    $scope.loadSummary = function(){
+    $scope.loadSummary = function(condition){
         IndexOverlayFactory.overlayShow();
-        HTTPService.clientRequest('loadSummary', {}).then(function(result){
+        HTTPService.clientRequest('loadSummary', {'condition' : condition}).then(function(result){
             if(result.data.STATUS == 'OK'){
                 $scope.CountRegister = result.data.DATA.CountRegister;
                 $scope.CountEvaluate = result.data.DATA.CountEvaluate;
@@ -1375,6 +1448,12 @@ app.controller('ReportController',function($scope, $routeParams, HTTPService, In
         });
     }
 
-    $scope.loadSummary();
+    var curDate = new Date();
+    var curYear = curDate.getFullYear();
+    var startYear = 2018;
+    $scope.YearList = getYearListFromBegin(startYear, curYear);
+    $scope.condition = {'years' : (curYear + 543)};
+
+    $scope.loadSummary($scope.condition);
 
 });

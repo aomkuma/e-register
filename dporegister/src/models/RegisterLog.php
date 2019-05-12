@@ -6,4 +6,8 @@ class RegisterLog extends \Illuminate\Database\Eloquent\Model {
   	protected $primaryKey = 'id';
   	public $timestamps = false;
     
+    public function wifi()
+    {
+  		return $this->hasOne('App\Model\Wifi', 'RegisterLogID');
+    }
 }

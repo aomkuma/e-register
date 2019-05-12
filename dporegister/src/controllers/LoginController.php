@@ -171,32 +171,38 @@
                     // Add new member
                     $obj['RegisterType'] = 'MANUAL';
                     $attendee = LoginService::registerMember($obj);   
-
+                    if(empty($obj['UserID'])){
+                        $obj['UserID'] = $attendee['UserID'];
+                    }
                     $RegisterLog = [];
                     $RegisterLog['user_id'] = $obj['UserID'];
                     $RegisterLog['years'] = date('Y');
+                    $RegisterLog['RegisterType'] = 'MANUAL';
                     $RegisterLog['register_date'] = date('Y-m-d');
 
                     $action = LoginService::saveRegisterLog($RegisterLog);
                     
                     if(!empty($attendee))
                     {   
-                        // $smsContent = 'รหัสเข้าใช้งาน Wifi ของหมายเลขบัตรประชาชน ' . $attendee['IDCard'] . ' คือ ' . $attendee['Wifi'];
-                        $smsContent = 'ขอบคุณที่ลงทะเบียนเข้าร่วมงานเทศกาลโคนมแห่งชาติ';
-                        $smsResult = $this->sendSMS($attendee['Mobile'], $smsContent);
-                        // $smsResult = true;
-                        $this->logger->info('SMS Result : ' . $smsResult); 
-                        if($smsResult !== false){
-                            $this->logger->info('SMS Result Success '); 
-                            // $this->data_result['DATA'] = 'กรุณาตรวจสอบรหัสเข้าใช้งาน Wifi ที่ส่งไปยังเบอร์โทรศัพท์หมายเลข ' . $attendee['Mobile'];
-                            $this->data_result['DATA'] = 'ขอบคุณที่ลงทะเบียนเข้าร่วมงานเทศกาลโคนมแห่งชาติ ประจำปี 2562';
-                            $this->data_result['UserData'] = $attendee;
-                        }else{
-                            $this->logger->info('SMS Result Failed '); 
-                            $this->data_result['STATUS'] = 'ERROR';
-                            // $this->data_result['DATA'] = 'ไม่สามารถรหัสเข้าใช้งาน Wifi ไปยังเบอร์โทรศัพท์ได้ ';//คลิ้กที่นี่ เพื่อรับรหัสผ่านอีกครั้ง';
-                        }   
+                        //     // $smsContent = 'รหัสเข้าใช้งาน Wifi ของหมายเลขบัตรประชาชน ' . $attendee['IDCard'] . ' คือ ' . $attendee['Wifi'];
+                        //     $smsContent = 'ขอบคุณที่ลงทะเบียนเข้าร่วมงานเทศกาลโคนมแห่งชาติ';
+                        //     $smsResult = $this->sendSMS($attendee['Mobile'], $smsContent);
+                        //     // $smsResult = true;
+                        //     $this->logger->info('SMS Result : ' . $smsResult); 
+                        //     if($smsResult !== false){
+                        //         $this->logger->info('SMS Result Success '); 
+                        //         // $this->data_result['DATA'] = 'กรุณาตรวจสอบรหัสเข้าใช้งาน Wifi ที่ส่งไปยังเบอร์โทรศัพท์หมายเลข ' . $attendee['Mobile'];
+                        //         $this->data_result['DATA'] = 'ขอบคุณที่ลงทะเบียนเข้าร่วมงานเทศกาลโคนมแห่งชาติ ประจำปี 2562';
+                        //         $this->data_result['UserData'] = $attendee;
+                        //     }else{
+                        //         $this->logger->info('SMS Result Failed '); 
+                        //         $this->data_result['STATUS'] = 'ERROR';
+                        //         // $this->data_result['DATA'] = 'ไม่สามารถรหัสเข้าใช้งาน Wifi ไปยังเบอร์โทรศัพท์ได้ ';//คลิ้กที่นี่ เพื่อรับรหัสผ่านอีกครั้ง';
+                        //     }   
+                        $this->data_result['DATA'] = 'ขอบคุณที่ลงทะเบียนเข้าร่วมงานเทศกาลโคนมแห่งชาติ ประจำปี 2562';
+                        $this->data_result['UserData'] = $attendee;
                     }
+                    
                 }else{
                     $this->data_result['STATUS'] = 'ERROR';
                     if(!empty($chkDuplicateIDCard[UserID]) && !empty($chkDuplicateMobile[UserID]))
@@ -259,26 +265,31 @@
                 
                 $this->logger->info('Find by id card : '. $idCard );
                 // System login
-                $user = LoginService::findWithIDCard($idCard);    
-                
-                $this->logger->info($user);
-                if(!empty($user[UserID])){
-                    unset($user[Password]);
+                if(!empty($idCard)){
+                    $user = LoginService::findWithIDCard($idCard);    
                     
-                    // Get menu in this user's group
-                    //$menuList = LoginService::getMenuList($user['UserID']);       
-                    $user['CitizenID'] = $user['IDCard'];
-                    $user['NameTH_FirstName'] = $user['Firstname'];
-                    $user['NameTH_SurName'] = $user['Lastname'];
-                    $user['Birthday'] = date('d/m/Y', strtotime($user['Birthdate']));
-                    $user['BirthDate'] = date('d/m/Y', strtotime($user['Birthdate']));
-                    $this->data_result['DATA']['UserData'] = $user;
-                    $this->data_result['DATA']['UserDataEncode'] = base64_encode($user);
+                    $this->logger->info($user);
+                    if(!empty($user[UserID])){
+                        unset($user[Password]);
+                        
+                        // Get menu in this user's group
+                        //$menuList = LoginService::getMenuList($user['UserID']);       
+                        $user['CitizenID'] = $user['IDCard'];
+                        $user['NameTH_FirstName'] = $user['Firstname'];
+                        $user['NameTH_SurName'] = $user['Lastname'];
+                        $user['Birthday'] = date('d/m/Y', strtotime($user['Birthdate']));
+                        $user['BirthDate'] = date('d/m/Y', strtotime($user['Birthdate']));
+                        $this->data_result['DATA']['UserData'] = $user;
+                        $this->data_result['DATA']['UserDataEncode'] = base64_encode($user);
+                    }else{
+                        $this->data_result['STATUS'] = 'ERROR';
+                        $this->data_result['DATA'] = 'ไม่พบผู้ใช้งาน กรุณาลงทะเบียน';
+                    }
                 }else{
                     $this->data_result['STATUS'] = 'ERROR';
                     $this->data_result['DATA'] = 'ไม่พบผู้ใช้งาน กรุณาลงทะเบียน';
                 }
-                
+
                 return $this->returnResponse(200, $this->data_result, $response, false);
                 
             }catch(\Exception $e){
@@ -293,21 +304,26 @@
                 
                 $this->logger->info('Find by id card : '. $idCard );
                 // System login
-                $user = LoginService::findRegisteredWithIDCard($idCard);    
-                
-                $this->logger->info($user);
-                if(!empty($user[UserID])){
-                    unset($user[Password]);
+                if(!empty($idCard)){
+                    $user = LoginService::findRegisteredWithIDCard($idCard);    
                     
-                    // Get menu in this user's group
-                    //$menuList = LoginService::getMenuList($user['UserID']);       
-                    $user['CitizenID'] = $user['IDCard'];
-                    $user['NameTH_FirstName'] = $user['Firstname'];
-                    $user['NameTH_SurName'] = $user['Lastname'];
-                    $user['Birthday'] = date('d/m/Y', strtotime($user['Birthdate']));
-                    $user['BirthDate'] = date('d/m/Y', strtotime($user['Birthdate']));
-                    $this->data_result['DATA']['UserData'] = $user;
-                    $this->data_result['DATA']['UserDataEncode'] = base64_encode($user);
+                    $this->logger->info($user);
+                    if(!empty($user[UserID])){
+                        unset($user[Password]);
+                        
+                        // Get menu in this user's group
+                        //$menuList = LoginService::getMenuList($user['UserID']);       
+                        $user['CitizenID'] = $user['IDCard'];
+                        $user['NameTH_FirstName'] = $user['Firstname'];
+                        $user['NameTH_SurName'] = $user['Lastname'];
+                        $user['Birthday'] = date('d/m/Y', strtotime($user['Birthdate']));
+                        $user['BirthDate'] = date('d/m/Y', strtotime($user['Birthdate']));
+                        $this->data_result['DATA']['UserData'] = $user;
+                        $this->data_result['DATA']['UserDataEncode'] = base64_encode($user);
+                    }else{
+                        $this->data_result['STATUS'] = 'ERROR';
+                        $this->data_result['DATA'] = 'ไม่พบผู้ใช้งาน กรุณาลงทะเบียน';
+                    }
                 }else{
                     $this->data_result['STATUS'] = 'ERROR';
                     $this->data_result['DATA'] = 'ไม่พบผู้ใช้งาน กรุณาลงทะเบียน';

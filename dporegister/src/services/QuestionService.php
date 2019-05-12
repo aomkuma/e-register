@@ -43,13 +43,21 @@
                         
         }
 
-        public static function getQuestionDataList($QuestionSection){
+        public static function getQuestionDataList($QuestionSection, $QuestionYearID = ''){
             
-            return Question::where('QuestionsSection', $QuestionSection)
+            return Question::where(function($query) use ($QuestionSection, $QuestionYearID){
+                            if(!empty($QuestionSection)){
+                                $query->where('QuestionsSection', $QuestionSection);
+                            }  
+                            if(!empty($QuestionYearID)){
+                                $query->where('QuestionYearID', $QuestionYearID);
+                            }  
+                        })
                     ->with(['choiceList' => function ($query) {
                         $query->where('DisplayType', '<>', 'NON');
                         $query->orderBy('ChoiceOrder', 'ASC');
                      }])
+                    ->orderBy('QuestionsSection', 'ASC')
                     ->orderBy('QuestionNo', 'ASC')
                     ->get();
                         

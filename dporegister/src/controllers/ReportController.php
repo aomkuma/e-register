@@ -17,12 +17,17 @@
 
         public function loadSummary($request, $response, $args){
             try{
-                $summaryRegister = ReportService::CountRegister();
-                $summaryEvaluatebySystem =  count(ReportService::CountEvaluateBySystem());
-                $summaryEvaluatebyManual =  count(ReportService::CountEvaluateByManual());
-                $summaryEvaluatebyAdmin =  count(ReportService::CountEvaluateByAdmin());
+                $obj = $request->getParsedBody();
+                $condition = $obj['obj']['condition'];
+                $years = $condition['years'] - 543;
+
+                $summaryRegister = ReportService::CountRegister($years);
+                $summaryEvaluatebySystem =  count(ReportService::CountEvaluateBySystem($years));
+                $summaryEvaluatebyManual =  count(ReportService::CountEvaluateByManual($years));
+                // $summaryEvaluatebyAdmin =  count(ReportService::CountEvaluateByAdmin($years));
+
                 $this->data_result['DATA']['CountRegister'] = $summaryRegister;
-                $this->data_result['DATA']['CountEvaluate'] = ($summaryEvaluatebySystem + $summaryEvaluatebyManual + $summaryEvaluatebyAdmin);
+                $this->data_result['DATA']['CountEvaluate'] = ($summaryEvaluatebySystem + $summaryEvaluatebyManual);
 
                 return $this->returnResponse(200, $this->data_result, $response);
 
@@ -36,59 +41,67 @@
             // error_reporting(E_ALL);
             // ini_set('display_errors','On');           
             try{
-                
+                $obj = $request->getParsedBody();
+                $condition = $obj['obj']['condition'];
+                $years = $condition['years'] - 543;
+
                 $cacheMethod = \PHPExcel_CachedObjectStorageFactory::cache_in_memory_gzip;
                 $catch_result = \PHPExcel_Settings::setCacheStorageMethod($cacheMethod);
 
                 $objPHPExcel = new PHPExcel();
                 
                 // Get Data Total Register 
-                $resultS1 = $this->QuerySheet1($objPHPExcel);
+                $resultS1 = $this->QuerySheet1($objPHPExcel, $years);
                 $objPHPExcel = $resultS1[0];
                 $totalEvaluateSystem = $resultS1[1];
                 $totalEvaluateManual = $resultS1[2];
+                $totalEvaluate = $totalEvaluateSystem + $totalEvaluateManual;
 
                 // Get Data Question section 1  (SYSTEM)
                 $sheetIndex = 1;
                 $sheetName = "รายงานสรุปส่วนที่ 1 ผ่านระบบ";
                 $registerType = 'SYSTEM';
-                $objPHPExcel = $this->QuerySheet2($totalEvaluateSystem, $registerType, $objPHPExcel, $sheetIndex, $sheetName);
+                $objPHPExcel = $this->QuerySheet2($years, $totalEvaluate, $registerType, $objPHPExcel, $sheetIndex, $sheetName);
 
                 // // Get Data Question section 2  (SYSTEM)
                 $sheetIndex = 2;
                 $sheetName = "รายงานสรุปส่วนที่ 2 ผ่านระบบ";
                 $registerType = 'SYSTEM';
-                $objPHPExcel = $this->QuerySheet3($totalEvaluateSystem, $registerType, $objPHPExcel, $sheetIndex, $sheetName);
+                $objPHPExcel = $this->QuerySheet3($years, $totalEvaluate, $registerType, $objPHPExcel, $sheetIndex, $sheetName);
 
                 // // Get Data Question section 1  (MANUAL)
-                $sheetIndex = 3;
-                $sheetName = "รายงานสรุปส่วนที่ 1 Manual";
-                $registerType = 'MANUAL';
-                $objPHPExcel = $this->QuerySheet4($totalEvaluateManual, $registerType, $objPHPExcel, $sheetIndex, $sheetName);
+                // $sheetIndex = 3;
+                // $sheetName = "รายงานสรุปส่วนที่ 1 Manual";
+                // $registerType = 'MANUAL';
+                // $objPHPExcel = $this->QuerySheet4($totalEvaluateManual, $registerType, $objPHPExcel, $sheetIndex, $sheetName);
 
                 // // Get Data Question section 2  (MANUAL)                
-                $sheetIndex = 4;
-                $sheetName = "รายงานสรุปส่วนที่ 2 Manual";
-                $registerType = 'MANUAL';
-                $objPHPExcel = $this->QuerySheet3($totalEvaluateManual, $registerType, $objPHPExcel, $sheetIndex, $sheetName);
+                // $sheetIndex = 4;
+                // $sheetName = "รายงานสรุปส่วนที่ 2 Manual";
+                // $registerType = 'MANUAL';
+                // $objPHPExcel = $this->QuerySheet3($totalEvaluateManual, $registerType, $objPHPExcel, $sheetIndex, $sheetName);
 
                 // // Get Data Question section 1  (ALL)
-                $sheetIndex = 5;
-                $sheetName = "รายงานสรุปส่วนที่ 1 รวม";
-                $registerType = '';
-                $objPHPExcel = $this->QuerySheet5($totalEvaluateSystem, $totalEvaluateManual, $objPHPExcel, $sheetIndex, $sheetName);
+                // $sheetIndex = 5;
+                // $sheetName = "รายงานสรุปส่วนที่ 1 รวม";
+                // $registerType = '';
+                // $objPHPExcel = $this->QuerySheet5($totalEvaluateSystem, $totalEvaluateManual, $objPHPExcel, $sheetIndex, $sheetName);
 
                 // // Get Data Question section 2  (ALL)
-                $sheetIndex = 6;
-                $sheetName = "รายงานสรุปส่วนที่ 2 รวม";
-                $registerType = '';
-                $totalEvaluate = $totalEvaluateManual + $totalEvaluateSystem;
-                $objPHPExcel = $this->QuerySheet3($totalEvaluate, $registerType, $objPHPExcel, $sheetIndex, $sheetName);
+                // $sheetIndex = 6;
+                // $sheetName = "รายงานสรุปส่วนที่ 2 รวม";
+                // $registerType = '';
+                // $totalEvaluate = $totalEvaluateManual + $totalEvaluateSystem;
+                // $objPHPExcel = $this->QuerySheet3($totalEvaluate, $registerType, $objPHPExcel, $sheetIndex, $sheetName);
+
+                $sheetIndex = 3;
+                $sheetName = "ข้อเสนอแนะ";
+                $objPHPExcel = $this->QuerySheet4(($years + 543), $objPHPExcel, $sheetIndex, $sheetName);                
 
                 // // Get Data Attendee Details
-                $sheetIndex = 7;
+                $sheetIndex = 4;
                 $sheetName = "สรุปรายงานข้อมูลที่เก็บ";
-                $objPHPExcel = $this->QuerySheetSummary($objPHPExcel, $sheetIndex, $sheetName);                
+                $objPHPExcel = $this->QuerySheetSummary($years, $objPHPExcel, $sheetIndex, $sheetName);                
 
                 $filename =  'report_evaluation_' . date('YmdHis') . '.xlsx';
                 $filepath = '../../../e-register/downloads/' . $filename;
@@ -108,9 +121,9 @@
         }
 
 
-        private function QuerySheetSummary($objPHPExcel, $sheetIndex, $sheetName){
+        private function QuerySheetSummary($years, $objPHPExcel, $sheetIndex, $sheetName){
             
-            $attendeeList = ReportService::getAttendeeDetail();
+            $attendeeList = ReportService::getAttendeeDetail($years);
             
             // print_r($attendeeList);
             // exit();
@@ -404,7 +417,41 @@
             return $objPHPExcel;
         }
 
-        private function QuerySheet4($totalEvaluate, $registerType, $objPHPExcel, $sheetIndex, $sheetName){
+        private function QuerySheet4($years, $objPHPExcel, $sheetIndex, $sheetName){
+            $SuggesstionList = ReportService::getSuggestionList($years);
+
+            $objPHPExcel->createSheet($sheetIndex);
+            $objPHPExcel->setActiveSheetIndex($sheetIndex);
+            $objPHPExcel->getActiveSheet()->setTitle($sheetName);
+
+            $row_index = 1;
+            $objPHPExcel->getActiveSheet()->setCellValue('A' . $row_index, "ลำดับ"); 
+            $objPHPExcel->getActiveSheet()->getColumnDimension('A')->setWidth(10);
+            $objPHPExcel->getActiveSheet()->setCellValue('B' . $row_index, "รายละเอียดข้อเสนอแนะ"); 
+            $objPHPExcel->getActiveSheet()->getColumnDimension('B')->setWidth(80);
+
+            $objPHPExcel->getActiveSheet()
+                ->getStyle("A".$row_index.":B".$row_index)
+                ->applyFromArray(array(                  
+                        'alignment' => array(
+                            'horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+                            'vertical' => \PHPExcel_Style_Alignment::VERTICAL_TOP
+                         ),'fill' => array(
+                            'type' => \PHPExcel_Style_Fill::FILL_SOLID,
+                            'color' => array('rgb' => 'D9DDDE')
+                        )
+                    )
+                );
+            $row_index++;
+
+            $cnt = 1;
+            foreach($SuggesstionList as $k => $v){
+                $objPHPExcel->getActiveSheet()->setCellValue('A' . $row_index, $cnt ); 
+                $objPHPExcel->getActiveSheet()->setCellValue('B' . $row_index, $v['suggestion'] ); 
+                $row_index++;
+                $cnt++;
+            }
+            /*
             $questionList = ReportService::GetQuestion(1);
             $EvaluateList = [];
             foreach($questionList as $k => $v){
@@ -535,14 +582,14 @@
                     }
                 }
             }
-
-            $objPHPExcel->getActiveSheet()->getStyle("A3:C" . $objPHPExcel->getActiveSheet()->getHighestRow())
+            */
+            $objPHPExcel->getActiveSheet()->getStyle("A1:B" . $objPHPExcel->getActiveSheet()->getHighestRow())
                 ->applyFromArray($this->getDefaultStyle());
 
             return $objPHPExcel;
         }
 
-        private function QuerySheet3($totalEvaluate, $registerType, $objPHPExcel, $sheetIndex, $sheetName){
+        private function QuerySheet3($years, $totalEvaluate, $registerType, $objPHPExcel, $sheetIndex, $sheetName){
             
             $row_index = 3;
             $objPHPExcel->createSheet($sheetIndex);
@@ -558,11 +605,11 @@
             $objPHPExcel->getActiveSheet()->getColumnDimension('H')->setWidth(14);
             $objPHPExcel->getActiveSheet()->getColumnDimension('I')->setWidth(14);
             $objPHPExcel->getActiveSheet()->getColumnDimension('J')->setWidth(14);
-            $objPHPExcel->getActiveSheet()->getColumnDimension('K')->setWidth(14);
-            $objPHPExcel->getActiveSheet()->getColumnDimension('L')->setWidth(20);
+            // $objPHPExcel->getActiveSheet()->getColumnDimension('K')->setWidth(14);
+            // $objPHPExcel->getActiveSheet()->getColumnDimension('L')->setWidth(20);
 
             $objPHPExcel->getActiveSheet()
-                                ->getStyle("A1:L2")
+                                ->getStyle("A1:J2")
                                 ->applyFromArray(array(                  
                                         'alignment' => array(
                                             'horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
@@ -578,21 +625,21 @@
             $objPHPExcel->getActiveSheet()->setCellValue('B1', "จำนวนคนที่ประเมิน"); 
             $objPHPExcel->getActiveSheet()->mergeCells('B1:G1');
             $objPHPExcel->getActiveSheet()->setCellValue('H1', "คิดเป็นร้อยละ"); 
-            $objPHPExcel->getActiveSheet()->mergeCells('H1:L1');
+            $objPHPExcel->getActiveSheet()->mergeCells('H1:J1');
             $objPHPExcel->getActiveSheet()->setCellValue('B2', "มาก"); 
             $objPHPExcel->getActiveSheet()->setCellValue('C2', "ปานกลาง"); 
-            $objPHPExcel->getActiveSheet()->setCellValue('D2', "น้อย"); 
-            $objPHPExcel->getActiveSheet()->setCellValue('E2', "ควรปรับปรุง"); 
+            $objPHPExcel->getActiveSheet()->setCellValue('D2', "ควรปรับปรุง"); 
+            $objPHPExcel->getActiveSheet()->setCellValue('E2', "รวมคนเข้าร่วม"); 
             $objPHPExcel->getActiveSheet()->setCellValue('F2', "ไม่ได้เข้าร่วมกิจกรรม");
             $objPHPExcel->getActiveSheet()->setCellValue('G2', "จำนวนรวม");
             $objPHPExcel->getActiveSheet()->setCellValue('H2', "มาก"); 
             $objPHPExcel->getActiveSheet()->setCellValue('I2', "ปานกลาง"); 
-            $objPHPExcel->getActiveSheet()->setCellValue('J2', "น้อย"); 
-            $objPHPExcel->getActiveSheet()->setCellValue('K2', "ควรปรับปรุง"); 
-            $objPHPExcel->getActiveSheet()->setCellValue('L2', "ไม่ได้เข้าร่วมกิจกรรม");
+            $objPHPExcel->getActiveSheet()->setCellValue('J2', "ควรปรับปรุง"); 
+            // $objPHPExcel->getActiveSheet()->setCellValue('K2', ""); 
+            // $objPHPExcel->getActiveSheet()->setCellValue('L2', "ไม่ได้เข้าร่วมกิจกรรม");
             
             $objPHPExcel->getActiveSheet()
-                                ->getStyle("H1:L2")
+                                ->getStyle("H1:J2")
                                 ->applyFromArray(array(                  
                                         'fill' => array(
                                             'type' => \PHPExcel_Style_Fill::FILL_SOLID,
@@ -601,13 +648,31 @@
                                     )
                                 );   
 
-            $topic = ["ความพึงพอใจด้านกิจกรรมต่างๆภายในงาน", "ความพึงพอใจด้านสถานที่","ความพึงพอใจด้านการบริการและอื่นๆ","ภาพรวมของการจัดงาน"];
-            for($i = 0; $i < 4; $i++){
-                $questionList = ReportService::GetQuestion(($i + 2));
+
+            // Load other section except first
+
+            // find question year and section
+            $QuestionSectionList = ReportService::GetQuestionSection($years + 543);
+
+            unset($QuestionSectionList[0]);
+            $QuestionSectionList = array_values($QuestionSectionList);
+            // $QuestionSection = $QuestionSectionList[0];
+            // print_r($QuestionSectionList);
+            // exit;
+
+
+            // $topic = ["ความพึงพอใจด้านกิจกรรมต่างๆภายในงาน", "ความพึงพอใจด้านสถานที่","ความพึงพอใจด้านการบริการและอื่นๆ","ภาพรวมของการจัดงาน"];
+            for($i = 0; $i < count($QuestionSectionList); $i++){
+
+                $QuestionSection = $QuestionSectionList[$i];
+
+                $topic = $QuestionSection['section'];
+                // $questionList = ReportService::GetQuestion(($i + 2));
+                $questionList = ReportService::GetQuestion($QuestionSection['id']);
                 $EvaluateList = [];
                 foreach($questionList as $k => $v){
                     $ChoiceResponse = [];
-                    foreach($v['choiceList'] as $ck => $cv){
+                    foreach($v['choice_list'] as $ck => $cv){
                         $response = count(ReportService::GetQuestionResponse($v['QuestionID'], $cv['ChoiceDesc'], $registerType)); 
                         $cv['response'] = $response;
                         $ChoiceResponse[] = $cv;   
@@ -616,7 +681,7 @@
                     $EvaluateList[] = $v;
                 }
 
-                $objPHPExcel->getActiveSheet()->setCellValue('A' . $row_index, $topic[$i]);        
+                $objPHPExcel->getActiveSheet()->setCellValue('A' . $row_index, $topic);        
                 $objPHPExcel->getActiveSheet()
                                 ->getStyle("A" . $row_index.":A" . $row_index)
                                 ->applyFromArray(array(                  
@@ -628,9 +693,9 @@
                                 );            
                 $row_index++;
                 $col_arr = ['B','C','D','E','F','G']; 
-                $col_percent_arr = ['H','I','J','K','L'];
+                $col_percent_arr = ['H','I','J'];
                 $col_summary_arr = [0,0,0,0,0,0]; 
-                $col_summarypercent_arr = [0,0,0,0,0]; 
+                $col_summarypercent_arr = [0,0,0]; 
                 $question_no = 1;
                 foreach($EvaluateList as $k => $v){
                     $objPHPExcel->getActiveSheet()->getStyle('A' . $row_index)->getAlignment()->setWrapText(true);
@@ -642,7 +707,19 @@
                         // echo $col_arr[$col_index] . $row_index;
                         // echo "\n\r";
                         $response = $cv['response'];
-                        $responsePercent = $this->number_format_round(($response *100) / $totalEvaluate, 2, '.', '');
+                        // echo $topic. ' ' .$totalEvaluate . ' ' . $response;exit;
+                        if(trim($topic) == 'ความพึงพอใจด้านกิจกรรมต่างๆภายในงาน'){
+
+                            // find total response
+                            $_totalResponse = 0;
+                            foreach ($v['ChoiceResponse'] as $_ck => $_cv) {
+                                $_totalResponse += $_cv['response'];
+                            }
+                            $responsePercent = $this->number_format_round((100 / $_totalResponse) * $response, 2, '.', '');
+
+                        }else{
+                            $responsePercent = $this->number_format_round(($response *100) / $totalEvaluate, 2, '.', '');
+                        }
                         $totalResponse += $response;
                         $objPHPExcel->getActiveSheet()->setCellValue($col_arr[$col_index] . $row_index, $response);
                         $objPHPExcel->getActiveSheet()->setCellValue($col_percent_arr[$col_index] . $row_index, $responsePercent);
@@ -650,9 +727,24 @@
                         $col_summarypercent_arr[$col_index] += $responsePercent;
                         $col_index++;
                     }
+
+                    // คนร่วมกิจกรรม
+                    $total_paticipate = $totalResponse;
+                    $objPHPExcel->getActiveSheet()->setCellValue($col_arr[$col_index] . $row_index, $total_paticipate);
+                    $col_summary_arr[$col_index] += $total_paticipate;
+                    $col_index++;
+
+
+                    // คนไม่ร่วมกิจกรรม
+                    $total_not_paticipate = $totalEvaluate - $total_paticipate;
+                    $objPHPExcel->getActiveSheet()->setCellValue($col_arr[$col_index] . $row_index, $total_not_paticipate);
+                    $col_summary_arr[$col_index] += $total_not_paticipate;
+                    $col_index++;
+
                     // Set total in cell 'G'
-                    $objPHPExcel->getActiveSheet()->setCellValue('G' . $row_index, $totalResponse);
-                    $col_summary_arr[$col_index] += $totalResponse;
+                    $total_response_row = $total_paticipate + $total_not_paticipate;
+                    $objPHPExcel->getActiveSheet()->setCellValue('G' . $row_index, $total_response_row);
+                    $col_summary_arr[$col_index] += $total_response_row;
                     $row_index++;
                     $question_no++;
                 }
@@ -667,7 +759,7 @@
                 }                
 
                 $objPHPExcel->getActiveSheet()
-                                ->getStyle("A".$row_index.":L".$row_index)
+                                ->getStyle("A".$row_index.":J".$row_index)
                                 ->applyFromArray(array(                  
                                         'fill' => array(
                                             'type' => \PHPExcel_Style_Fill::FILL_SOLID,
@@ -680,16 +772,24 @@
             }
             
             // exit;
-            $objPHPExcel->getActiveSheet()->getStyle("A1:L" . $objPHPExcel->getActiveSheet()->getHighestRow())
+            $objPHPExcel->getActiveSheet()->getStyle("A1:J" . $objPHPExcel->getActiveSheet()->getHighestRow())
                 ->applyFromArray($this->getDefaultStyle());
 
             return $objPHPExcel;            
 
         }
 
-        private function QuerySheet2($totalEvaluate, $registerType, $objPHPExcel, $sheetIndex, $sheetName){
-            $questionList = ReportService::GetQuestion(1);
+        private function QuerySheet2($years, $totalEvaluate, $registerType, $objPHPExcel, $sheetIndex, $sheetName){
+
+            // find question year and section
+            $QuestionSectionList = ReportService::GetQuestionSection($years + 543);
+
+            $QuestionSection = $QuestionSectionList[0];
+            // print_r($QuestionSection);
+            $questionList = ReportService::GetQuestion($QuestionSection['id']);
+            
             $EvaluateList = [];
+            $cntQuestion = 0;
             foreach($questionList as $k => $v){
                 // get question response by question id
                 $ChoiceResponse = [];
@@ -697,15 +797,23 @@
                 $age2 = 0;
                 $age3 = 0;
                 $age4 = 0;
-                foreach($v['choiceList'] as $ck => $cv){
-                    if($v['QuestionID'] == '3'){
-                        $response = count(ReportService::GetQuestionResponseMultiChoice($v['QuestionID'], $cv['ChoiceDesc'], $registerType));
-                    }else if($v['QuestionID'] == '32'){
-                        $response = count(ReportService::GetQuestionResponseByGender($cv['ChoiceDesc']));    
-                    }else if($v['QuestionID'] == '33'){
-                        $response = count(ReportService::GetQuestionResponseByAge($cv['ChoiceDesc']));    
+                foreach($v['choice_list'] as $ck => $cv){
+                    // if($cntQuestion == 4){
+                    //     $response = count(ReportService::GetQuestionResponseMultiChoice($v['QuestionID'], $cv['ChoiceDesc'], $registerType));
+                    // }else 
+                    if($cntQuestion == 0){
+                        $response = count(ReportService::GetQuestionResponseByGender($cv['ChoiceDesc'], $years));    
+                    }else if($cntQuestion == 1){
+                        // echo $cv['ChoiceDesc'].", $years";
+                        $response = count(ReportService::GetQuestionResponseByAge($cv['ChoiceDesc'], $years));    
                     }else{
-                        $response = count(ReportService::GetQuestionResponse($v['QuestionID'], $cv['ChoiceDesc'], $registerType));    
+
+                        if($v['QuestionType'] == 'MANY'){
+                            $response = count(ReportService::GetQuestionResponseMultiChoice($v['QuestionID'], $cv['ChoiceDesc'], $registerType));
+                        }else{
+                            $response = count(ReportService::GetQuestionResponse($v['QuestionID'], $cv['ChoiceDesc'], $registerType));        
+                        }
+                        
                     }
                     
                     $cv['response'] = $response;
@@ -714,6 +822,7 @@
 
                 $v['ChoiceResponse'] = $ChoiceResponse;
                 $EvaluateList[] = $v;
+                $cntQuestion++;
             }
 
             // Gen excel
@@ -726,11 +835,12 @@
             $objPHPExcel->getActiveSheet()->getColumnDimension('B')->setWidth(12);
             $objPHPExcel->getActiveSheet()->getColumnDimension('C')->setWidth(14);
             $row_index++;
-
+            // print_r($EvaluateList);exit;
             foreach($EvaluateList as $k => $v){
-                if($v['QuestionsSection'] == '1'){
+                // if($v['QuestionsSection'] == '1'){
 
-                    if($v['QuestionID'] == '3'){
+                    // if($v['QuestionID'] == '3'){
+                    if($v['QuestionType'] == 'MANY'){
 
                         foreach ($v['ChoiceResponse'] as $ck => $cv) {
                             $objPHPExcel->getActiveSheet()->setCellValue('A' . $row_index, 'วัตถุประสงที่มา (' . $cv['ChoiceDesc'] . ')' ); 
@@ -820,7 +930,7 @@
                         $objPHPExcel->getActiveSheet()->setCellValue('C' . $row_index, $summaryPercent);
                         $row_index++; 
                     }
-                }
+                // }
             }
 
             $objPHPExcel->getActiveSheet()->getStyle("A3:C" . $objPHPExcel->getActiveSheet()->getHighestRow())
@@ -829,12 +939,12 @@
             return $objPHPExcel;
         }
         
-        private function QuerySheet1($objPHPExcel){
+        private function QuerySheet1($objPHPExcel, $years){
             # Divided by System And Manual
             $objPHPExcel->getActiveSheet()->setTitle("สรุปจำนวนผู้ลงทะเบียน");
 
-            $summaryRegister = ReportService::CountRegister();
-            $summaryRegisterByType = ReportService::CountRegisterByType();
+            $summaryRegister = ReportService::CountRegister($years);
+            $summaryRegisterByType = ReportService::CountRegisterByType($years);
             $totalRegisterSystem = 0;
             $totalRegisterManual = 0;
             $totalRegisterSystemPercent = 0;
@@ -900,6 +1010,7 @@
             $row_index++;
 
             # Rewards
+            /*
             $summaryRewards =  ReportService::CountRewards();
             $summaryRewardsbyType =  ReportService::CountRewardsByType();
             $totalRewardsSystem = 0;
@@ -960,7 +1071,7 @@
                 );
             $row_index++;
             $row_index++;
-
+            */
             # Evaluate
             $summaryEvaluate =  count(ReportService::CountEvaluate());
             
@@ -1008,15 +1119,15 @@
                 $row_index++;
             }
             */
-            $summaryEvaluatebySystem =  count(ReportService::CountEvaluateBySystem());
+            $summaryEvaluatebySystem =  count(ReportService::CountEvaluateBySystem($years));
             $totalEvaluateSystem = $summaryEvaluatebySystem;
             $totalEvaluateSystemPercent = number_format($totalEvaluateSystem * 100 / $summaryEvaluate, 2);
             $objPHPExcel->getActiveSheet()->setCellValue('A'. $row_index, "สรุปจำนวนผู้ตอบแบบสอบถามผ่านระบบที่ลงทะเบียนล่วงหน้า");
             $objPHPExcel->getActiveSheet()->setCellValue('B'. $row_index, $totalEvaluateSystem);
             $objPHPExcel->getActiveSheet()->setCellValue('C'. $row_index, $totalEvaluateSystemPercent);  
             $row_index++;
-
-            $summaryEvaluatebyManual =  count(ReportService::CountEvaluateByManual());
+            // print_r(ReportService::CountEvaluateByManual($years));exit;
+            $summaryEvaluatebyManual =  count(ReportService::CountEvaluateByManual($years));
             $totalEvaluateManual = $summaryEvaluatebyManual;
             $totalEvaluateManualPercent = number_format($totalEvaluateManual * 100 / $summaryEvaluate, 2);
             $objPHPExcel->getActiveSheet()->setCellValue('A'. $row_index, "สรุปจำนวนผู้ตอบแบบสอบถามผ่านระบบที่ลงทะเบียนหน้างาน");
@@ -1024,6 +1135,7 @@
             $objPHPExcel->getActiveSheet()->setCellValue('C'. $row_index, $totalEvaluateManualPercent);  
             $row_index++;
 
+            /*
             $summaryEvaluatebyAdmin =  count(ReportService::CountEvaluateByAdmin());
             $totalEvaluateAdmin = $summaryEvaluatebyAdmin;
             $totalEvaluateAdminPercent = number_format($totalEvaluateAdmin * 100 / $summaryEvaluate, 2);
@@ -1031,7 +1143,7 @@
             $objPHPExcel->getActiveSheet()->setCellValue('B'. $row_index, $totalEvaluateAdmin);
             $objPHPExcel->getActiveSheet()->setCellValue('C'. $row_index, $totalEvaluateAdminPercent);  
             $row_index++;
-
+            */
             $objPHPExcel->getActiveSheet()->setCellValue('A'. $row_index, "รวม");
             $objPHPExcel->getActiveSheet()->setCellValue('B'. $row_index, ($totalEvaluateSystem + $totalEvaluateManual + $totalEvaluateAdmin));
             $objPHPExcel->getActiveSheet()->setCellValue('C'. $row_index, ($totalEvaluateSystemPercent + $totalEvaluateManualPercent + $totalEvaluateAdminPercent));
